@@ -1,0 +1,10 @@
+SELECT
+    id,
+    first_name,
+    last_name,
+    email,
+    tel_number,
+    rating,
+    role
+FROM
+    Client
