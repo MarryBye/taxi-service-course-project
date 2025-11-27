@@ -1,6 +1,0 @@
-CREATE TABLE IF NOT EXISTS orders_driver_history (
-    id BIGINT GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
-    order_id BIGINT NOT NULL REFERENCES orders(id) ON DELETE CASCADE,
-    driver_id BIGINT REFERENCES drivers(user_id) ON DELETE SET NULL,
-    changed_at TIMESTAMP NOT NULL DEFAULT now()
-)

@@ -1,6 +1,0 @@
-CREATE TABLE IF NOT EXISTS orders_rating (
-	id BIGINT GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
-	order_id BIGINT NOT NULL UNIQUE REFERENCES orders(id) ON DELETE CASCADE,
-	client_mark DOUBLE PRECISION CHECK (client_mark >= 0 AND client_mark <= 5) DEFAULT 5,
-	driver_mark DOUBLE PRECISION CHECK (driver_mark >= 0 AND driver_mark <= 5) DEFAULT 5
-)

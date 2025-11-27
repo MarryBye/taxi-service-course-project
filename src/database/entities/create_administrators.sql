@@ -1,3 +1,0 @@
-CREATE TABLE IF NOT EXISTS administrators (
-    user_id BIGINT PRIMARY KEY REFERENCES users(id) ON DELETE CASCADE
-)

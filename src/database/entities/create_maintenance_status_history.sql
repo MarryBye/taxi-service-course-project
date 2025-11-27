@@ -1,6 +1,0 @@
-CREATE TABLE IF NOT EXISTS maintenance_status_history (
-    id BIGINT GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
-    maintenance_id BIGINT NOT NULL REFERENCES maintenances(id) ON DELETE CASCADE,
-    status_id BIGINT NOT NULL DEFAULT 1 REFERENCES maintenance_statuses(id) ON DELETE SET DEFAULT ,
-    changed_at TIMESTAMP NOT NULL DEFAULT now()
-)
