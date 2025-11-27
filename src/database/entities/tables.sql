@@ -29,7 +29,7 @@ CREATE TABLE IF NOT EXISTS orders (
 	id BIGINT GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
 	client_id BIGINT NOT NULL REFERENCES users(id) ON DELETE CASCADE,
     driver_id BIGINT REFERENCES users(id) ON DELETE SET NULL,
-    status_id order_statuses NOT NULL DEFAULT 'searching_for_driver',
+    status order_statuses NOT NULL DEFAULT 'searching_for_driver',
     created_at TIMESTAMP NOT NULL DEFAULT NOW(),
     finished_at TIMESTAMP,
     changed_at TIMESTAMP NOT NULL DEFAULT NOW()
