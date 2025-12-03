@@ -1,10 +1,13 @@
 CREATE OR REPLACE FUNCTION update_order_on_finish() RETURNS trigger AS $$
 BEGIN
-    IF (NEW.status = 'finished') THEN
+    IF (NEW.status = 'completed') THEN
         INSERT INTO order_ratings
             (order_id)
         VALUES
             (NEW.id);
+        UPDATE orders
+        SET finished_at = NOW()
+        WHERE id = NEW.id;
     END IF;
     RETURN NEW;
 END;

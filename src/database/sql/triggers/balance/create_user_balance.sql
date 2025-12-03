@@ -4,10 +4,10 @@ CREATE OR REPLACE FUNCTION create_user_balance() RETURNS trigger AS $$
 BEGIN
 
     INSERT INTO
-        balances(user_id, balance_type, updated_at)
+        balances(user_id, balance_type)
     VALUES
-        (NEW.id, 'payment', NEW.created_at),
-        (NEW.id, 'earning', NEW.created_at);
+        (NEW.id, 'payment'),
+        (NEW.id, 'earning');
 
     RETURN NEW;
 END;

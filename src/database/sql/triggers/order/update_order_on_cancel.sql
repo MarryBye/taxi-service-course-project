@@ -1,7 +1,7 @@
 CREATE OR REPLACE FUNCTION update_order_on_cancel() RETURNS trigger AS $$
 BEGIN
     UPDATE orders
-    SET status = 'canceled'
+    SET status = 'canceled', finished_at = NOW()
     WHERE id = NEW.order_id;
     RETURN NEW;
 END;

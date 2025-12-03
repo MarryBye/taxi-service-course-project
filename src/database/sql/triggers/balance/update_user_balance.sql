@@ -25,7 +25,7 @@ BEGIN
         END IF;
     END IF;
     UPDATE balances
-    SET balance = (balance + adjust_amount), updated_at = NOW()
+    SET balance = (balance + adjust_amount)
     WHERE user_id = NEW.user_id
     AND balance_type = NEW.balance_type;
     RETURN NEW;
@@ -33,5 +33,5 @@ END;
 $$ LANGUAGE plpgsql;
 
 CREATE OR REPLACE TRIGGER update_user_balance_trigger
-AFTER INSERT OR UPDATE ON transactions
+BEFORE INSERT OR UPDATE ON transactions
 FOR EACH ROW EXECUTE PROCEDURE update_user_balance();
