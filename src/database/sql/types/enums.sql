@@ -1,3 +1,4 @@
+
 CREATE TYPE car_statuses AS ENUM (
     'available',
     'on_maintenance',

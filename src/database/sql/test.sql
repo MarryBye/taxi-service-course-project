@@ -1,0 +1,1 @@
+SELECT * FROM create_user('test_user32', 'test32@gmail.com', '+38-066-073-33-32', 'password', 'Test', 'User', 'client');
