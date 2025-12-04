@@ -1,0 +1,188 @@
+{
+	"info": {
+		"_postman_id": "870c8c76-1840-4ae1-9b34-b1c7ba85ff29",
+		"name": "TaxiDB Collection",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "48068122",
+		"_collection_link": "https://marrybye-8119865.postman.co/workspace/Viktor-Lukianov's-Workspace~d4c52de0-dcf6-4952-89c9-0df83ac4db0c/collection/48068122-870c8c76-1840-4ae1-9b34-b1c7ba85ff29?action=share&source=collection_link&creator=48068122"
+	},
+	"item": [
+		{
+			"name": "auth",
+			"item": [
+				{
+					"name": "/login",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 200\", function () {",
+									"    pm.response.to.have.status(200);",
+									"});",
+									"",
+									"let isJson = true;",
+									"let data = null;",
+									"",
+									"pm.test(\"Response is valid JSON\", function () {",
+									"    try {",
+									"        data = pm.response.json();",
+									"        pm.expect(data).to.be.an(\"object\");",
+									"    } catch (e) {",
+									"        isJson = false;",
+									"    }",
+									"    pm.expect(isJson, \"Response body should be JSON\").to.be.true;",
+									"});",
+									"",
+									"pm.test(\"Response has access_token as a string\", function () {",
+									"    if (data === null) {",
+									"        try { data = pm.response.json(); } catch (e) {}",
+									"    }",
+									"    pm.expect(data, \"Parsed JSON body should exist\").to.be.an(\"object\");",
+									"    pm.expect(data).to.have.property(\"access_token\");",
+									"    pm.expect(data.access_token, \"access_token should be a string\").to.be.a(\"string\");",
+									"});",
+									"",
+									"// Save token to active environment when present",
+									"if (isJson) {",
+									"    if (data === null) {",
+									"        try { data = pm.response.json(); } catch (e) {}",
+									"    }",
+									"    if (data && typeof data.access_token === 'string' && data.access_token.length > 0) {",
+									"        pm.environment.set(\"token\", data.access_token);",
+									"        pm.test(\"Saved access_token to environment variable 'token'\", function () {",
+									"            pm.expect(pm.environment.get(\"token\")).to.eql(data.access_token);",
+									"        });",
+									"    }",
+									"}",
+									"",
+									"// Optional hint for requests without auth set yet",
+									"pm.test(\"Auth not set on request (informational)\", function () {",
+									"    const auth = pm.request.auth;",
+									"    pm.expect(!auth || auth.type === undefined, \"Auth is not configured on this request\").to.be.true;",
+									"});"
+								],
+								"type": "text/javascript",
+								"packages": {},
+								"requests": {}
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"login\": \"admin\",\r\n    \"password\": \"1111\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{host}}/login",
+							"host": [
+								"{{host}}"
+							],
+							"path": [
+								"login"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "/register",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "urlencoded",
+							"urlencoded": [
+								{
+									"key": "login",
+									"value": "",
+									"type": "text"
+								},
+								{
+									"key": "password",
+									"value": "",
+									"type": "text"
+								},
+								{
+									"key": "first_name",
+									"value": "",
+									"type": "text"
+								},
+								{
+									"key": "last_name",
+									"value": "",
+									"type": "text"
+								},
+								{
+									"key": "email",
+									"value": "",
+									"type": "text"
+								},
+								{
+									"key": "tel_number",
+									"value": "",
+									"type": "text"
+								}
+							]
+						},
+						"url": {
+							"raw": "{{host}}/register",
+							"host": [
+								"{{host}}"
+							],
+							"path": [
+								"register"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "users",
+			"item": [
+				{
+					"name": "/",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"auth": {
+							"type": "noauth"
+						},
+						"method": "GET",
+						"header": [
+							{
+								"key": "Token",
+								"value": "{{token}}",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "urlencoded",
+							"urlencoded": []
+						},
+						"url": {
+							"raw": "{{host}}/users",
+							"host": [
+								"{{host}}"
+							],
+							"path": [
+								"users"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		}
+	]
+}
