@@ -1,11 +1,11 @@
 CREATE OR REPLACE FUNCTION update_car(
     par_id BIGINT,
-    par_mark VARCHAR(32),
-    par_model VARCHAR(32),
-    par_car_number VARCHAR(32),
-    par_class car_classes,
-    par_status car_statuses,
-    par_driver_id BIGINT
+    par_mark VARCHAR(32) DEFAULT NULL,
+    par_model VARCHAR(32) DEFAULT NULL,
+    par_car_number VARCHAR(32) DEFAULT NULL,
+    par_class car_classes DEFAULT NULL,
+    par_status car_statuses DEFAULT NULL,
+    par_driver_id BIGINT DEFAULT NULL
 )
 RETURNS SETOF cars_view AS $$
 BEGIN

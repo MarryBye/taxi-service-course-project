@@ -1,11 +1,11 @@
 CREATE OR REPLACE FUNCTION update_user(
     par_id BIGINT,
-    par_email VARCHAR(128),
-    par_tel_number VARCHAR(32),
-    par_password_hash VARCHAR(512),
-    par_first_name VARCHAR(32),
-    par_last_name VARCHAR(32),
-    par_role user_roles
+    par_email VARCHAR(128) DEFAULT NULL,
+    par_tel_number VARCHAR(32) DEFAULT NULL,
+    par_password_hash VARCHAR(512) DEFAULT NULL,
+    par_first_name VARCHAR(32) DEFAULT NULL,
+    par_last_name VARCHAR(32) DEFAULT NULL,
+    par_role user_roles DEFAULT NULL
 ) RETURNS SETOF users_view AS $$
 DECLARE
     updated_user_id BIGINT;

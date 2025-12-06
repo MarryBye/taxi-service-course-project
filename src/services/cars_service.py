@@ -19,7 +19,7 @@ class CarsService(BaseService):
         return database.execute(query, params=params, fetch_count=1)
     
     @staticmethod
-    def update(id: int, mark, model, car_number, car_class, car_status, driver_id=None):
+    def update(id: int, mark = None, model = None, car_number = None, car_class = None, car_status = None, driver_id = None):
         query = "SELECT * FROM update_car(%s, %s, %s, %s, %s, %s, %s);"
         params = [id, mark, model, car_number, car_class, car_status, driver_id]
         return database.execute(query, params=params, fetch_count=1)

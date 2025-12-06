@@ -1,4 +1,0 @@
-CREATE OR REPLACE FUNCTION list_cars()
-RETURNS TABLE (
-    
-)

@@ -19,7 +19,7 @@ class UsersService(BaseService):
         return database.execute(query, params=params, fetch_count=1)
     
     @staticmethod
-    def update(id: int, email, tel_number, password, first_name, last_name, role):
+    def update(id: int, email = None, tel_number = None, password = None, first_name = None, last_name = None, role = None):
         query = "SELECT * FROM update_user(%s, %s, %s, %s, %s, %s, %s);"
         params = [id, email, tel_number, password, first_name, last_name, role]
         return database.execute(query, params=params, fetch_count=1)

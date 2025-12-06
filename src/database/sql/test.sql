@@ -1,1 +1,4 @@
-SELECT * FROM create_user('test_user32', 'test32@gmail.com', '+38-066-073-33-32', 'password', 'Test', 'User', 'client');
+SELECT * FROM update_user(
+    par_id:=1,
+    par_first_name:='John'
+);
