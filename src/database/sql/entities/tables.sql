@@ -1,3 +1,4 @@
+-- Active: 1764877667177@@127.0.0.1@5432@TaxiDBProject
 CREATE DATABASE taxi_db;
 
 CREATE TABLE IF NOT EXISTS users (

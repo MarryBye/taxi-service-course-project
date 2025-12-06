@@ -98,39 +98,13 @@
 						"method": "POST",
 						"header": [],
 						"body": {
-							"mode": "urlencoded",
-							"urlencoded": [
-								{
-									"key": "login",
-									"value": "",
-									"type": "text"
-								},
-								{
-									"key": "password",
-									"value": "",
-									"type": "text"
-								},
-								{
-									"key": "first_name",
-									"value": "",
-									"type": "text"
-								},
-								{
-									"key": "last_name",
-									"value": "",
-									"type": "text"
-								},
-								{
-									"key": "email",
-									"value": "",
-									"type": "text"
-								},
-								{
-									"key": "tel_number",
-									"value": "",
-									"type": "text"
+							"mode": "raw",
+							"raw": "{\n    \"login\": \"admin\",\n    \"password\": \"1111\",\n    \"first_name\": \"Oleg\",\n    \"last_name\": \"Olegovich\",\n    \"email\": \"admin_oleg@gmail.com\",\n    \"tel_number\": \"+38-066-073-34-45\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
 								}
-							]
+							}
 						},
 						"url": {
 							"raw": "{{host}}/register",
@@ -177,6 +151,66 @@
 							],
 							"path": [
 								"users"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "/{user_id}",
+					"request": {
+						"method": "GET",
+						"header": []
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "cars",
+			"item": [
+				{
+					"name": "/",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Token",
+								"value": "{{token}}",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{host}}/cars",
+							"host": [
+								"{{host}}"
+							],
+							"path": [
+								"cars"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "/{car_id}",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Token",
+								"value": "{{token}}",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{host}}/cars/1",
+							"host": [
+								"{{host}}"
+							],
+							"path": [
+								"cars",
+								"1"
 							]
 						}
 					},

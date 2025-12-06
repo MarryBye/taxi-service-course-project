@@ -11,43 +11,49 @@ FROM users AS u;
 
 CREATE OR REPLACE VIEW cars_view AS
 SELECT
-    c.id AS car_id,
-    c.mark AS car_mark,
-    c.model AS car_model,
+    c.id AS id,
+    c.mark AS mark,
+    c.model AS model,
     c.car_number AS car_number,
     c.class AS car_class,
     c.status AS car_status,
-    c.created_at AS car_created_at,
+    c.created_at AS created_at,
 
-    u.id AS driver_id,
-    u.first_name AS driver_first_name,
-    u.last_name AS driver_last_name,
-    u.email AS driver_email,
-    u.tel_number AS driver_tel_number,
-    u.created_at AS driver_created_at,
-    u.role AS driver_role
+    CASE
+        WHEN u.id IS NULL THEN NULL
+    ELSE
+        json_build_object(
+            'id', u.id,
+            'first_name', u.first_name,
+            'last_name', u.last_name,
+            'email', u.email,
+            'tel_number', u.tel_number,
+            'created_at', u.created_at,
+            'role', u.role
+        )
+    END AS driver
+        
 FROM cars AS c
-LEFT JOIN users AS u ON c.driver_id = u.id;
+LEFT JOIN users_view AS u ON c.driver_id = u.id;
 
 CREATE OR REPLACE VIEW drivers_view AS
 SELECT
-    u.id AS driver_id,
-    u.first_name AS driver_first_name,
-    u.last_name AS driver_last_name,
-    u.email AS driver_email,
-    u.tel_number AS driver_tel_number,
-    u.created_at AS driver_created_at,
-
-    c.id AS car_id,
-    c.mark AS car_mark,
-    c.model AS car_model,
-    c.car_number AS car_number,
-    c.class AS car_class,
-    c.status AS car_status,
-    c.created_at AS car_created_at
-FROM users AS u
-LEFT JOIN cars AS c ON u.id = c.driver_id
-WHERE u.role = 'driver';
+    u.*,
+    CASE
+        WHEN c.id IS NULL THEN NULL
+    ELSE
+        json_build_object(
+            'id', c.id,
+            'mark', c.mark,
+            'model', c.model,
+            'car_number', c.car_number,
+            'class', c.class,
+            'status', c.status,
+            'created_at', c.created_at
+        ) 
+    END AS car
+FROM users_view AS u
+LEFT JOIN cars AS c ON c.driver_id = u.id;
 
 CREATE OR REPLACE VIEW staff_view AS
 SELECT
