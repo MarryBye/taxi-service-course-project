@@ -21,7 +21,11 @@ class CarUpdateSchema(BaseModel):
     car_class: CarClass | None = Field(None, title="Car Class")
     car_status: CarStatus | None = Field(None, title="Car Status")
     driver_id: int | None = Field(None, title="Driver ID")
-    
+
+class CarSchemaNoDriver(BaseCarSchema):
+    id: int = Field(..., title="Car ID")
+    created_at: datetime = Field(..., title="Creation Timestamp")
+
 class CarSchema(BaseCarSchema):
     id: int = Field(..., title="Car ID")
     driver: UserSchema | None = Field(None, title="Driver Information")

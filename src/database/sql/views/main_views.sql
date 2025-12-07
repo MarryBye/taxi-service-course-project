@@ -1,3 +1,4 @@
+-- Active: 1764877667177@@127.0.0.1@5432@taxi_db
 CREATE OR REPLACE VIEW users_view AS
 SELECT
     u.id,
@@ -47,48 +48,53 @@ SELECT
             'mark', c.mark,
             'model', c.model,
             'car_number', c.car_number,
-            'class', c.class,
-            'status', c.status,
+            'car_class', c.class,
+            'car_status', c.status,
             'created_at', c.created_at
         ) 
     END AS car
 FROM users_view AS u
 LEFT JOIN cars AS c ON c.driver_id = u.id;
 
-CREATE OR REPLACE VIEW staff_view AS
-SELECT
-    u.id,
-    u.first_name,
-    u.last_name,
-    u.email,
-    u.tel_number,
-    u.created_at
-FROM users AS u
-WHERE u.role IN ('admin', 'manager');
-
 CREATE OR REPLACE VIEW orders_view AS
 SELECT
-    o.id AS order_id,
-    o.status AS order_status,
-    o.finished_at AS order_finished_at,
-    o.created_at AS order_created_at,
+    o.id,
+    o.status,
+    o.finished_at,
+    o.created_at,
 
-    o.client_id AS order_client_id,
-    c.first_name AS client_first_name,
-    c.last_name AS client_last_name,
-    c.email AS client_email,
-    c.tel_number AS client_tel_number,
-    c.created_at AS client_created_at,
+    CASE
+        WHEN c.id IS NULL THEN NULL
+    ELSE
+        json_build_object(
+            'id', c.id,
+            'first_name', c.first_name,
+            'last_name', c.last_name,
+            'email', c.email,
+            'tel_number', c.tel_number,
+            'created_at', c.created_at,
+            'role', c.role
+        )
+    END AS client,
+
+    CASE
+        WHEN d.id IS NULL THEN NULL
+    ELSE
+        json_build_object(
+            'id', d.id,
+            'first_name', d.first_name,
+            'last_name', d.last_name,
+            'email', d.email,
+            'tel_number', d.tel_number,
+            'created_at', d.created_at,
+            'role', d.role
+        )
+    END AS driver,
+
     orat_client.mark AS client_rating,
     orat_client.comment AS client_comment,
     orat_client.created_at AS client_rating_created_at,
 
-    o.driver_id AS order_driver_id,
-    d.first_name AS driver_first_name,
-    d.last_name AS driver_last_name,
-    d.email AS driver_email,
-    d.tel_number AS driver_tel_number,
-    d.created_at AS driver_created_at,
     orat_driver.mark AS driver_rating,
     orat_driver.comment AS driver_comment,
     orat_driver.created_at AS driver_rating_created_at,

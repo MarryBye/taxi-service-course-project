@@ -2,6 +2,7 @@ from fastapi import HTTPException, status
 from fastapi.responses import JSONResponse
 from src.services.users_service import UsersService
 from src.schemas.users import UserSchema, UserCreateSchema, UserUpdateSchema
+from src.schemas.drivers import DriverSchema
 from src.schemas.token import TokenDataSchema
 
 class UsersController:
@@ -11,11 +12,23 @@ class UsersController:
         return users
     
     @staticmethod
+    def list_drivers_view(current_user: TokenDataSchema) -> list[DriverSchema]:
+        drivers = UsersService.list_drivers()
+        return drivers
+    
+    @staticmethod
     def detail_view(user_id: int, current_user: TokenDataSchema) -> UserSchema:
         user = UsersService.get(user_id)
         if not user:
             raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="User not found")
         return user
+    
+    @staticmethod
+    def detail_driver_view(driver_id: int, current_user: TokenDataSchema) -> DriverSchema:
+        driver = UsersService.get_driver(driver_id)
+        if not driver:
+            raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Driver not found")
+        return driver
     
     @staticmethod
     def create_view(schema: UserCreateSchema, current_user: TokenDataSchema) -> UserSchema:

@@ -1,6 +1,7 @@
 from fastapi import APIRouter, Depends
 from src.schemas.users import UserCreateSchema, UserSchema, UserUpdateSchema
 from src.schemas.token import TokenDataSchema
+from src.schemas.drivers import DriverSchema
 from src.controllers.users import UsersController
 from src.utils.auth import Auth
 
@@ -10,9 +11,17 @@ router = APIRouter()
 async def list_users(current_user: TokenDataSchema = Depends(Auth.verify_token)) -> list[UserSchema]:
     return UsersController.list_view(current_user=current_user)
 
+@router.get('/drivers')
+async def list_drivers(current_user: TokenDataSchema = Depends(Auth.verify_token)) -> list[DriverSchema]:
+    return UsersController.list_drivers_view(current_user=current_user)
+
 @router.get('/users/{user_id}')
 async def get_user(user_id: int, current_user: TokenDataSchema = Depends(Auth.verify_token)) -> UserSchema:
     return UsersController.detail_view(user_id=user_id, current_user=current_user)
+
+@router.get('/drivers/{driver_id}')
+async def get_driver(driver_id: int, current_user: TokenDataSchema = Depends(Auth.verify_token)) -> DriverSchema:
+    return UsersController.detail_driver_view(driver_id=driver_id, current_user=current_user)
 
 @router.post('/users')
 async def create_user(schema: UserCreateSchema, current_user: TokenDataSchema = Depends(Auth.verify_token)) -> UserSchema:

@@ -8,9 +8,19 @@ class UsersService(BaseService):
         return database.execute(query, fetch_count=-1)
     
     @staticmethod
+    def list_drivers():
+        query = "SELECT * FROM drivers_view;"
+        return database.execute(query, fetch_count=-1)
+    
+    @staticmethod
     def get(id: int):
         query = "SELECT * FROM users_view WHERE id = %s;"
         return database.execute(query, params=[id], fetch_count=1)  
+    
+    @staticmethod
+    def get_driver(id: int):
+        query = "SELECT * FROM drivers_view WHERE id = %s;"
+        return database.execute(query, params=[id], fetch_count=1)
     
     @staticmethod
     def create(login, email, tel_number, password, first_name, last_name, role):

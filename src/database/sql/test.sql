@@ -1,4 +1,4 @@
-SELECT * FROM update_user(
-    par_id:=1,
-    par_first_name:='John'
-);
+SELECT * FROM update_order(
+    1,
+    2
+)
