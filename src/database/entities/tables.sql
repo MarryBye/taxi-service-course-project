@@ -1,4 +1,4 @@
--- Active: 1764877667177@@127.0.0.1@5432@TaxiDBProject
+-- Active: 1764877667177@@127.0.0.1@5432@taxi_db@public
 CREATE DATABASE taxi_db;
 
 CREATE TABLE IF NOT EXISTS users (
@@ -9,6 +9,8 @@ CREATE TABLE IF NOT EXISTS users (
     password_hash VARCHAR(512) NOT NULL,
     first_name VARCHAR(32) NOT NULL,
     last_name VARCHAR(32) NOT NULL,
+    country country_names NOT NULL,
+    city city_names NOT NULL,
     role user_roles NOT NULL DEFAULT 'client',
 
     created_at TIMESTAMP NOT NULL DEFAULT NOW(),
@@ -21,8 +23,11 @@ CREATE TABLE IF NOT EXISTS cars (
 	mark VARCHAR(32) NOT NULL,
 	model VARCHAR(32) NOT NULL,
 	car_number VARCHAR(32) UNIQUE NOT NULL CHECK (check_car_number(car_number)),
-	class car_classes NOT NULL DEFAULT 'standard',
-    status car_statuses NOT NULL DEFAULT 'available',
+    country country_names NOT NULL,
+    city city_names NOT NULL,
+    color VARCHAR(32) NOT NULL,
+	car_class car_classes NOT NULL DEFAULT 'standard',
+    car_status car_statuses NOT NULL DEFAULT 'available',
 
     created_at TIMESTAMP NOT NULL DEFAULT NOW(),
     changed_at TIMESTAMP NOT NULL DEFAULT NOW()
@@ -84,6 +89,7 @@ CREATE TABLE IF NOT EXISTS transactions (
 	user_id BIGINT NOT NULL REFERENCES users(id) ON DELETE CASCADE,
     balance_type balance_types NOT NULL,
     transaction_type transaction_type NOT NULL,
+    payment_method payment_methods NOT NULL,
     amount NUMERIC NOT NULL DEFAULT 0 CHECK (amount >= 0),
     order_id BIGINT REFERENCES orders(id) ON DELETE SET NULL,
 

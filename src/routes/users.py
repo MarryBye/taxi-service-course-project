@@ -1,7 +1,6 @@
 from fastapi import APIRouter, Depends
 from src.schemas.users import UserCreateSchema, UserSchema, UserUpdateSchema
 from src.schemas.token import TokenDataSchema
-from src.schemas.drivers import DriverSchema
 from src.controllers.users import UsersController
 from src.utils.auth import Auth
 

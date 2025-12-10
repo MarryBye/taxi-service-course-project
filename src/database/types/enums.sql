@@ -1,3 +1,4 @@
+-- Active: 1764877667177@@127.0.0.1@5432@taxi_db@public
 
 CREATE TYPE car_statuses AS ENUM (
     'available',
@@ -34,6 +35,11 @@ CREATE TYPE transaction_type AS ENUM (
     'penalty'
 );
 
+CREATE TYPE payment_methods AS ENUM (
+    'credit_card',
+    'cash'
+);
+
 CREATE TYPE balance_types AS ENUM (
     'payment',
     'earning'
@@ -41,7 +47,6 @@ CREATE TYPE balance_types AS ENUM (
 
 CREATE TYPE user_roles AS ENUM (
     'admin',
-    'manager',
     'driver',
     'client'
 );
@@ -63,4 +68,16 @@ CREATE TYPE driver_tags AS ENUM (
     'polite',
     'communicative',
     'helpful'
+);
+
+CREATE TYPE city_names AS ENUM (
+    'Kyiv',
+    'Lviv',
+    'Odessa',
+    'Dnipro',
+    'Kharkiv'
+);
+
+CREATE TYPE country_names AS ENUM (
+    'Ukraine'
 );

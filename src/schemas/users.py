@@ -23,7 +23,6 @@ class UserUpdateSchema(BaseModel, UserPasswordSchema):
     last_name: str | None = Field(None, title="Last Name", max_length=32)
     email: str | None = Field(None, title="Email Address", max_length=128)
     tel_number: str | None = Field(None, title="Telephone Number", max_length=32)
-    role: UserRole | None = Field(None, title="User Role")     
     password: str | None = Field(None, title="Password", max_length=512)
 
 class UserSchema(BaseUserSchema):
