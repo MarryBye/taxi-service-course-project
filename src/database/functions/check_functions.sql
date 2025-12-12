@@ -1,4 +1,3 @@
--- Active: 1764877667177@@127.0.0.1@5432@taxi_db@public
 CREATE OR REPLACE FUNCTION check_car_number(car_number TEXT) RETURNS BOOLEAN AS $$
 BEGIN
   RETURN (car_number IS NOT NULL);

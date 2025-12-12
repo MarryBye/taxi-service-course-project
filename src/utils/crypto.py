@@ -9,7 +9,7 @@ pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
 class CryptoUtil:
     @staticmethod
     def create_access_token(data: TokenDataSchema) -> str:
-        to_encode = data.copy()
+        to_encode = data.dict()
         expire = datetime.now() + timedelta(minutes=JWT_TOKEN_LIFETIME)
         to_encode.update({"exp": expire})
         encoded_jwt = jwt.encode(to_encode, JWT_SECRET_KEY, algorithm=JWT_ALGORITHM)
@@ -18,7 +18,7 @@ class CryptoUtil:
     @staticmethod
     def verify_access_token(token: str) -> TokenDataSchema | None:
         try:
-            payload = jwt.decode(token, JWT_SECRET_KEY, algorithms=[JWT_ALGORITHM])
+            payload = TokenDataSchema(**jwt.decode(token, JWT_SECRET_KEY, algorithms=[JWT_ALGORITHM]))
             return payload
         except JWTError:
             return None

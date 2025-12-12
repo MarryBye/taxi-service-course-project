@@ -1,6 +1,3 @@
--- Active: 1764877667177@@127.0.0.1@5432@taxi_db@public
-CREATE DATABASE taxi_db;
-
 CREATE TABLE IF NOT EXISTS users (
     id BIGINT GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
     login VARCHAR(32) NOT NULL UNIQUE,
@@ -38,6 +35,7 @@ CREATE TABLE IF NOT EXISTS orders (
 	client_id BIGINT NOT NULL REFERENCES users(id) ON DELETE CASCADE,
     driver_id BIGINT REFERENCES users(id) ON DELETE SET NULL,
     status order_statuses NOT NULL DEFAULT 'searching_for_driver',
+    order_class car_classes NOT NULL DEFAULT 'standard',
     finished_at TIMESTAMP,
 
     created_at TIMESTAMP NOT NULL DEFAULT NOW(),
@@ -125,7 +123,6 @@ CREATE TABLE IF NOT EXISTS route_points (
 
 CREATE TABLE IF NOT EXISTS maintenances (
     id BIGINT GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
-    manager_id BIGINT NOT NULL REFERENCES users(id) ON DELETE CASCADE,
     car_id BIGINT NOT NULL REFERENCES cars(id) ON DELETE CASCADE,
     description VARCHAR(2048) NOT NULL,
     cost NUMERIC NOT NULL DEFAULT 0 CHECK (cost >= 0),
