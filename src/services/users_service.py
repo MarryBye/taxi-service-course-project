@@ -34,7 +34,6 @@ class UsersService:
     @staticmethod
     def update(id: int, schema: UpdateUserSchema, executor: AuthUserSchema = None):
         query = "SELECT * FROM update_user(%s, %s, %s, %s, %s, %s, %s, %s, %s)"
-        print(schema)
         params = [
             id,
             schema.email,

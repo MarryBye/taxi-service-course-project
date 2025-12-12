@@ -35,7 +35,7 @@ class UsersController:
             schema: CreateUserSchema,
             current_user: AuthUserSchema
     ) -> UserSchema:
-        schema.hash_password()
+        # schema.hash_password()
         user = UsersService.create(schema, executor=current_user)
         return user
     
@@ -46,7 +46,7 @@ class UsersController:
             schema: UpdateUserSchema,
             current_user: AuthUserSchema
     ) -> UserSchema:
-        schema.hash_password()
+        # schema.hash_password()
         user = UsersService.update(user_id, schema, executor=current_user)
         return user
     

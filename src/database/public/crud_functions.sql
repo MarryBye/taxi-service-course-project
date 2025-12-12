@@ -1,7 +1,9 @@
 -- CRUD Users
 
-CREATE OR REPLACE PROCEDURE assign_role(par_login VARCHAR(32), role user_roles)
-AS $$
+CREATE OR REPLACE PROCEDURE assign_role(
+    par_login VARCHAR(32),
+    par_role user_roles
+) AS $$
 DECLARE
     old_role name;
 BEGIN
@@ -9,16 +11,43 @@ BEGIN
     IF NOT old_role IS NULL THEN
         EXECUTE FORMAT('REVOKE %I FROM %I;', old_role, par_login);
     END IF;
-    EXECUTE FORMAT('GRANT %I TO %I;', role, par_login);
+    EXECUTE FORMAT('GRANT %I TO %I;', par_role, par_login);
+    UPDATE users SET role = par_role WHERE login = par_login;
 END;
 $$ LANGUAGE plpgsql;
+
+CREATE OR REPLACE PROCEDURE create_psql_user(
+    par_login VARCHAR(32),
+    par_password VARCHAR(32),
+    par_role user_roles DEFAULT 'client'
+) AS $$
+BEGIN
+    EXECUTE FORMAT('CREATE USER %I WITH PASSWORD %L;', par_login, par_password);
+    CALL assign_role(par_login, par_role);
+END;
+$$ LANGUAGE plpgsql;
+
+CREATE OR REPLACE PROCEDURE delete_psql_user(
+    par_login VARCHAR(32)
+) AS $$
+BEGIN
+    EXECUTE FORMAT('DROP USER IF EXISTS %I;', par_login);
+END;
+$$ LANGUAGE plpgsql;
+
+CREATE OR REPLACE PROCEDURE create_starter_balance(
+    par_user_id BIGINT
+) AS $$
+BEGIN
+    INSERT INTO balances(user_id, balance, balance_type) VALUES (par_user_id, 0, 'earning');
+    INSERT INTO balances(user_id, balance, balance_type) VALUES (par_user_id, 0, 'payment');
+END $$ LANGUAGE plpgsql;
 
 CREATE OR REPLACE FUNCTION list_users(
     limit_number INT DEFAULT 100,
     offset_number INT DEFAULT 0
 ) RETURNS SETOF users_view AS $$
 BEGIN
-    SET ROLE "admin";
     RETURN QUERY
         SELECT *
         FROM users_view
@@ -30,7 +59,6 @@ CREATE OR REPLACE FUNCTION get_user(
     par_filter_id BIGINT
 ) RETURNS SETOF users_view AS $$
 BEGIN
-    SET ROLE "admin";
     RETURN QUERY
         SELECT *
         FROM users_view
@@ -53,12 +81,8 @@ CREATE OR REPLACE FUNCTION create_user(
 DECLARE
     created_user_id BIGINT;
 BEGIN
-
-    SET ROLE "admin";
-
     INSERT INTO users (
-        login,
-        email,
+        login,email,
         tel_number,
         password_hash,
         first_name,
@@ -80,17 +104,11 @@ BEGIN
     )
     RETURNING id INTO created_user_id;
 
-    INSERT INTO balances
-        (user_id, balance, balance_type)
-    VALUES
-        (created_user_id, 0, 'payment'),
-        (created_user_id, 0, 'earning');
-
-    EXECUTE FORMAT('CREATE USER %I WITH PASSWORD %L;', par_login, par_password_hash);
-    CALL assign_role(par_login, par_role);
+    CALL create_starter_balance(created_user_id);
+    CALL create_psql_user(par_login, par_password_hash, par_role);
 
     RETURN QUERY
-    SELECT * FROM users_view WHERE id = created_user_id;
+        SELECT * FROM users_view WHERE id = created_user_id;
 END;
 $$ LANGUAGE plpgsql;
 
@@ -139,8 +157,8 @@ BEGIN
         (created_user_id, 0, 'payment'),
         (created_user_id, 0, 'earning');
 
-    EXECUTE FORMAT('CREATE USER %I WITH PASSWORD %L;', par_login, par_password_hash);
-    EXECUTE FORMAT('GRANT client TO %I;', par_login);
+    CALL create_starter_balance(created_user_id);
+    CALL create_psql_user(par_login, par_password_hash, 'client');
 
     RETURN QUERY
         SELECT * FROM users_view WHERE id = created_user_id;
@@ -153,10 +171,10 @@ CREATE OR REPLACE FUNCTION delete_user(
 DECLARE
     user_login VARCHAR(32);
 BEGIN
-    SET ROLE "admin";
     user_login := (SELECT login FROM users WHERE id = par_id);
+
     DELETE FROM users WHERE id = par_id;
-    EXECUTE FORMAT('DROP USER IF EXISTS %I', user_login);
+    CALL delete_psql_user(user_login);
 END;
 $$ LANGUAGE plpgsql;
 
@@ -175,9 +193,6 @@ DECLARE
     updated_user_id BIGINT;
     user_login VARCHAR(32);
 BEGIN
-    SET ROLE "admin";
-    SELECT login INTO user_login FROM users WHERE id = par_id;
-
     UPDATE users
     SET
         email = COALESCE(par_email, email),
@@ -189,7 +204,7 @@ BEGIN
         country = COALESCE(par_country, country),
         role = COALESCE(par_role, role)
     WHERE par_id = id
-    RETURNING id INTO updated_user_id;
+    RETURNING id, login INTO updated_user_id, user_login;
 
     IF par_password_hash IS NOT NULL THEN
         EXECUTE FORMAT('ALTER USER %I WITH PASSWORD %L;', user_login, par_password_hash);
@@ -200,7 +215,7 @@ BEGIN
     END IF;
 
     RETURN QUERY
-    SELECT * FROM users_view WHERE id = updated_user_id;
+        SELECT * FROM users_view WHERE id = updated_user_id;
 END;
 $$ LANGUAGE plpgsql;
 
