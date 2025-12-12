@@ -2,7 +2,7 @@ from fastapi import HTTPException, status, Request
 from fastapi.responses import JSONResponse
 from src.services.auth_service import AuthService
 from src.schemas.token import TokenSchema, TokenDataSchema
-from src.schemas.auth import AuthUserSchema, RegisterUserSchema
+from src.schemas.auth import AuthUserSchema, RegisterUserSchema, AuthResponseUserSchema
 from src.utils.crypto import CryptoUtil
 
 class AuthController:
@@ -10,14 +10,35 @@ class AuthController:
     def login(
             req: Request,
             schema: AuthUserSchema,
-            current_user: AuthUserSchema
+            user: TokenDataSchema
     ) -> TokenSchema:
-        result = AuthService.login(schema)
+        result = AuthService.auth(schema, user)
+
+        if isinstance(result, Exception):
+            raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail=str(result))
 
         if not result:
-            raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="Incorrect username or password")
+            raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="Incorrect username")
 
-        token = CryptoUtil.create_access_token(TokenDataSchema(login=schema.login, password=schema.password))
+        result = AuthResponseUserSchema(
+            id = result["id"],
+            login = result["login"],
+            password = result["password_hash"],
+            role = result["role"]
+        )
+
+        if not CryptoUtil.verify_password(schema.password, result.password):
+            raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="Incorrect password")
+
+        token = CryptoUtil.create_access_token(
+            TokenDataSchema(
+                id = result.id,
+                login = result.login,
+                password = result.password,
+                role = result.role
+            )
+        )
+
         req.session["TOKEN"] = token
 
         result = TokenSchema(access_token=token, token_type="bearer")
@@ -28,22 +49,26 @@ class AuthController:
     def register(
             req: Request,
             schema: RegisterUserSchema,
-            current_user: AuthUserSchema
+            user: TokenDataSchema
     ) -> JSONResponse:
+        schema.hash_password()
         user = AuthService.register(schema)
 
+        if isinstance(user, Exception):
+            raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail=str(user))
+
         if not user:
-            raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="User already exists")
+            raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="Can`t create user with this data")
 
         return JSONResponse("Successfully signed up!", status_code=status.HTTP_200_OK)
     
     @staticmethod
     def logout(
         req: Request,
-        current_user: AuthUserSchema
+        user: TokenDataSchema
     ) -> JSONResponse:
         # req.session.clear()
 
-        print(current_user)
+        print(user)
 
         return JSONResponse("Successfully signed out!", status_code=status.HTTP_200_OK)

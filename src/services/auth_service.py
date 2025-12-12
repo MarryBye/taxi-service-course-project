@@ -1,33 +1,32 @@
-from src.controllers.database import database
-from src.schemas.auth import AuthUserSchema, RegisterUserSchema, AuthResponseUserSchema
+from src.controllers.database import Database
+from src.schemas.auth import AuthUserSchema, RegisterUserSchema
+from src.schemas.token import TokenDataSchema
 
 
 class AuthService:
     @staticmethod
-    def auth(data: AuthUserSchema) -> AuthResponseUserSchema | None:
+    def auth(data: AuthUserSchema, user: TokenDataSchema = None) -> Exception | dict:
+        db = Database(user=user)
+
         query = "SELECT * FROM auth(%s)"
         params = [data.login]
-        return database.execute(query, params=params, fetch_count=1)
+
+        return db.execute(query, params=params, fetch_count=1)
 
     @staticmethod
-    def login(schema: AuthUserSchema):
-        try:
-            database.connect(executor_data=schema)
-        except Exception as e:
-            return None
-        return True
+    def register(schema: RegisterUserSchema, user: TokenDataSchema = None) -> Exception | dict:
+        db = Database(user=user)
 
-    @staticmethod
-    def register(schema: RegisterUserSchema):
-        query = "SELECT * FROM register_user(%s, %s, %s, %s, %s, %s, %s, %s)"
+        query = "CALL register(%s, %s, %s, %s, %s, %s, %s, %s)"
         params = [
             schema.login,
             schema.email,
             schema.tel_number,
             schema.password,
-            schema.city_name,
-            schema.country_name,
             schema.first_name,
-            schema.last_name
+            schema.last_name,
+            schema.country_name,
+            schema.city_name
         ]
-        return database.execute(query, params=params, fetch_count=1)
+
+        return db.execute(query, params=params, fetch_count=0)

@@ -1,7 +1,7 @@
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from starlette.middleware.sessions import SessionMiddleware
-from src.routes.users import router as users_router
+# from src.routes.users import router as users_router
 from src.routes.auth import router as auth_router
 # from src.routes.profile import router as profile_router
 
@@ -24,4 +24,4 @@ app.include_router(auth_router, tags=["Auth"], prefix="/api")
 
 # app.include_router(profile_router, tags=["Profile"], prefix="/api")
 #
-app.include_router(users_router, tags=["Users"], prefix="/api")
+# app.include_router(users_router, tags=["Users"], prefix="/api")

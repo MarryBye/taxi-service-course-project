@@ -8,6 +8,7 @@ from src.schemas.mixins.WithHashablePassword import WithHashablePassword
 
 class AuthUserSchema(BaseModel):
     login: str = Field(..., alias="login", description="User's login")
+    password: str = Field(..., alias="password", description="User's password")
 
 class AuthResponseUserSchema(BaseModel):
     id: int = Field(..., alias="id", description="User ID")
