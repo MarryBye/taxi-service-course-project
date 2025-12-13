@@ -5,8 +5,11 @@ from src.enums.roles import UserRole
 
 class UsersService:
     @staticmethod
-    def list(limit: int = 10, offset: int = 0, executor: AuthUserSchema = None):
-        query = "SELECT * FROM list_users(limit_number := %s, offset_number := %s)"
+    def list(limit: int = 10, offset: int = 0, executor: AuthUserSchema = None, **kwargs):
+        query = """SELECT * FROM admin.users_view LIMIT %s OFFSET %s"""
+
+
+
         params = [limit, offset]
         return database.execute(query, params=params, fetch_count=-1, executor_data=executor)
     

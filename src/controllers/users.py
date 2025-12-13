@@ -3,7 +3,7 @@ from fastapi.responses import JSONResponse
 from src.services.users_service import UsersService
 from src.schemas.users import UserSchema, CreateUserSchema, UpdateUserSchema
 from src.schemas.auth import AuthUserSchema
-from src.schemas.token import TokenDataSchema
+
 
 class UsersController:
     @staticmethod

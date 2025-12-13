@@ -9,10 +9,34 @@ SELECT
     u.role,
     u.city,
     u.created_at,
-    u.changed_at,
-    b.balance AS payment_balance
-FROM private.users AS u
+    u.changed_at
+FROM private.users AS u;
+
+CREATE OR REPLACE VIEW admin.clients_view AS
+SELECT
+    u.*,
+    b.balance AS earning_balance
+FROM admin.users_view AS u
 LEFT JOIN private.balances AS b ON u.id = b.user_id AND b.balance_type = 'payment';
+
+CREATE OR REPLACE VIEW admin.drivers_view AS
+SELECT
+    u.*,
+    b_e.balance AS earning_balance,
+    b_p.balance AS payment_balance,
+    c.id AS car_id
+FROM admin.users_view AS u
+LEFT JOIN private.cars AS c ON c.driver_id = u.id
+LEFT JOIN private.balances AS b_e ON u.id = b_e.user_id AND b_e.balance_type = 'earning'
+LEFT JOIN private.balances AS b_p ON u.id = b_p.user_id AND b_p.balance_type = 'payment'
+WHERE u.role = 'driver';
+
+CREATE OR REPLACE VIEW admin.admins_view AS
+SELECT
+    u.*
+FROM admin.users_view AS u
+LEFT JOIN private.balances AS b ON u.id = b.user_id AND b.balance_type = 'payment'
+WHERE u.role = 'admin';
 
 CREATE OR REPLACE VIEW admin.cars_view AS
 SELECT
@@ -29,23 +53,6 @@ SELECT
     c.changed_at,
     c.driver_id
 FROM private.cars AS c;
-
-CREATE OR REPLACE VIEW admin.drivers_view AS
-SELECT
-    u.*,
-    b.balance AS earning_balance,
-    c.id AS car_id
-FROM admin.users_view AS u
-LEFT JOIN private.cars AS c ON c.driver_id = u.id
-LEFT JOIN private.balances AS b ON u.id = b.user_id AND b.balance_type = 'earning'
-WHERE u.role = 'driver';
-
-CREATE OR REPLACE VIEW admin.admins_view AS
-SELECT
-    u.*
-FROM admin.users_view AS u
-LEFT JOIN private.balances AS b ON u.id = b.user_id AND b.balance_type = 'payment'
-WHERE u.role = 'admin';
 
 CREATE OR REPLACE VIEW admin.orders_view AS
 SELECT
