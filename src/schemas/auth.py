@@ -1,10 +1,6 @@
 from pydantic import BaseModel, Field
-
-from src.enums.roles import UserRole
-from src.enums.city_names import CityNames
-from src.enums.country_names import CountryNames
-
-from src.schemas.mixins.WithHashablePassword import WithHashablePassword
+from src.enums.db import UserRole, CountryName, CityName
+from src.schemas.mixins.hashable_password import WithHashablePassword
 
 class AuthUserSchema(BaseModel):
     login: str = Field(..., alias="login", description="User's login")
@@ -23,5 +19,5 @@ class RegisterUserSchema(BaseModel, WithHashablePassword):
     password: str = Field(..., alias="password", description="User's password")
     first_name: str = Field(..., alias="first_name", description="First name of the user", max_length=32)
     last_name: str = Field(..., alias="last_name", description="Last name of the user", max_length=32)
-    country_name: CountryNames = Field(..., alias="country", description="Country of the user", max_length=32)
-    city_name: CityNames = Field(..., alias="city", description="City of the user", max_length=32)
+    country_name: CountryName = Field(..., alias="country", description="Country of the user", max_length=32)
+    city_name: CityName = Field(..., alias="city", description="City of the user", max_length=32)

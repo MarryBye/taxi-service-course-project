@@ -90,17 +90,6 @@ BEGIN
 END;
 $$ LANGUAGE plpgsql;
 
-CREATE OR REPLACE FUNCTION admin.driver(
-    p_user_id BIGINT
-)
-RETURNS SETOF admin.users_view
-SECURITY DEFINER AS $$
-BEGIN
-    RETURN QUERY
-        SELECT * FROM admin.users_view WHERE id = p_user_id;
-END;
-$$ LANGUAGE plpgsql;
-
 CREATE OR REPLACE PROCEDURE admin.create_user(
     p_login VARCHAR(32),
     p_email VARCHAR(128),
@@ -120,11 +109,14 @@ END;
 $$ LANGUAGE plpgsql;
 
 CREATE OR REPLACE PROCEDURE admin.delete_user(
-    p_login VARCHAR(32)
+    p_user_id BIGINT
 ) SECURITY DEFINER AS $$
+DECLARE
+    user_login VARCHAR(32);
 BEGIN
-    DELETE FROM private.users WHERE login = p_login;
-    CALL admin.delete_psql_user(p_login);
+    user_login := (SELECT login FROM private.users WHERE id = p_user_id);
+    DELETE FROM private.users WHERE id = p_user_id;
+    CALL admin.delete_psql_user(user_login);
 END;
 $$ LANGUAGE plpgsql;
 
@@ -153,7 +145,7 @@ BEGIN
         city = coalesce(p_city, city),
         role = coalesce(p_role, role)
     WHERE id = p_user_id
-    RETURNING login INTO updated_user_login;;
+    RETURNING login INTO updated_user_login;
 
     IF (NOT p_role IS NULL) THEN
         CALL admin.set_psql_user_role(updated_user_login, p_role);
@@ -168,6 +160,27 @@ $$ LANGUAGE plpgsql;
 ---------------------------------------
 -- CARS TABLE USAGE
 ---------------------------------------
+
+CREATE OR REPLACE FUNCTION admin.list_cars(
+    p_offset INT DEFAULT 0,
+    p_limit INT DEFAULT 100
+) RETURNS SETOF admin.cars_view
+SECURITY DEFINER AS $$
+BEGIN
+    RETURN QUERY
+        SELECT * FROM admin.cars_view LIMIT p_limit OFFSET p_offset;
+END;
+$$ LANGUAGE plpgsql;
+
+CREATE OR REPLACE FUNCTION admin.get_car(
+    p_car_id BIGINT
+) RETURNS SETOF admin.cars_view
+SECURITY DEFINER AS $$
+BEGIN
+    RETURN QUERY
+        SELECT * FROM admin.cars_view WHERE id = p_car_id;
+END;
+$$ LANGUAGE plpgsql;
 
 CREATE OR REPLACE PROCEDURE admin.create_car(
     p_mark VARCHAR(32),
@@ -227,6 +240,27 @@ $$ LANGUAGE plpgsql;
 ---------------------------------------
 -- ORDERS TABLE USAGE
 ---------------------------------------
+
+CREATE OR REPLACE FUNCTION admin.list_orders(
+    p_offset INT DEFAULT 0,
+    p_limit INT DEFAULT 100
+) RETURNS SETOF admin.orders_view
+SECURITY DEFINER AS $$
+BEGIN
+    RETURN QUERY
+        SELECT * FROM admin.orders_view LIMIT p_limit OFFSET p_offset;
+END;
+$$ LANGUAGE plpgsql;
+
+CREATE OR REPLACE FUNCTION admin.get_order(
+    p_order_id BIGINT
+) RETURNS SETOF admin.orders_view
+SECURITY DEFINER AS $$
+BEGIN
+    RETURN QUERY
+        SELECT * FROM admin.orders_view WHERE id = p_order_id;
+END;
+$$ LANGUAGE plpgsql;
 
 CREATE OR REPLACE PROCEDURE admin.create_order(
     p_client_id BIGINT,
@@ -309,6 +343,27 @@ $$ LANGUAGE plpgsql;
 -- MAINTENANCE TABLE USAGE
 ---------------------------------------
 
+CREATE OR REPLACE FUNCTION admin.list_maintenances(
+    p_offset INT DEFAULT 0,
+    p_limit INT DEFAULT 100
+) RETURNS SETOF admin.maintenance_view
+SECURITY DEFINER AS $$
+BEGIN
+    RETURN QUERY
+        SELECT * FROM admin.maintenance_view LIMIT p_limit OFFSET p_offset;
+END;
+$$ LANGUAGE plpgsql;
+
+CREATE OR REPLACE FUNCTION admin.get_maintenance(
+    p_maintenance_id BIGINT
+) RETURNS SETOF admin.maintenance_view
+SECURITY DEFINER AS $$
+BEGIN
+    RETURN QUERY
+        SELECT * FROM admin.maintenance_view WHERE id = p_maintenance_id;
+END;
+$$ LANGUAGE plpgsql;
+
 CREATE OR REPLACE PROCEDURE admin.create_maintenance(
     p_car_id BIGINT,
     p_description VARCHAR(2048),
@@ -350,6 +405,16 @@ $$ LANGUAGE plpgsql;
 ---------------------------------------
 -- TRANSACTION TABLE USAGE
 ---------------------------------------
+
+CREATE OR REPLACE FUNCTION admin.get_transaction(
+    p_transaction_id BIGINT
+) RETURNS SETOF admin.transactions_view
+SECURITY DEFINER AS $$
+BEGIN
+    RETURN QUERY
+        SELECT * FROM admin.transactions_view WHERE id = p_transaction_id;
+END;
+$$ LANGUAGE plpgsql;
 
 CREATE OR REPLACE PROCEDURE admin.create_transaction(
     p_user_id BIGINT,

@@ -157,3 +157,14 @@ BEGIN
         ORDER BY created_at DESC;
 END;
 $$ LANGUAGE plpgsql;
+
+CREATE OR REPLACE FUNCTION workers.get_own_stats() RETURNS admin.drivers_view SECURITY DEFINER AS $$
+DECLARE
+    p_driver_id BIGINT;
+    result admin.drivers_view;
+BEGIN
+    p_driver_id := public.get_current_user();
+    result := (SELECT * FROM admin.drivers_view WHERE id = p_driver_id);
+    RETURN result;
+END;
+$$ LANGUAGE plpgsql;

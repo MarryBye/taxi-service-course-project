@@ -1,5 +1,5 @@
 from pydantic import BaseModel, Field
-from src.enums.roles import UserRole
+from src.enums.db import UserRole
 
 class TokenSchema(BaseModel):
     access_token: str

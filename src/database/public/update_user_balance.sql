@@ -5,7 +5,7 @@ DECLARE
 BEGIN
     current_balance := (
         SELECT balance
-        FROM balances
+        FROM private.balances
         WHERE user_id = NEW.user_id
         AND balance_type = NEW.balance_type
     );
@@ -24,7 +24,7 @@ BEGIN
             RETURN NULL;
         END IF;
     END IF;
-    UPDATE balances
+    UPDATE private.balances
     SET balance = (balance + adjust_amount)
     WHERE user_id = NEW.user_id
     AND balance_type = NEW.balance_type;
@@ -33,5 +33,5 @@ END;
 $$ LANGUAGE plpgsql;
 
 CREATE OR REPLACE TRIGGER update_user_balance_trigger
-BEFORE INSERT OR UPDATE ON transactions
+BEFORE INSERT OR UPDATE ON private.transactions
 FOR EACH ROW EXECUTE PROCEDURE update_user_balance();

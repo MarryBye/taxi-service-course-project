@@ -15,21 +15,114 @@ FROM private.users AS u;
 CREATE OR REPLACE VIEW admin.clients_view AS
 SELECT
     u.*,
-    b.balance AS earning_balance
-FROM admin.users_view AS u
-LEFT JOIN private.balances AS b ON u.id = b.user_id AND b.balance_type = 'payment';
+    b.balance AS payment_balance,
+    COUNT(o.id) AS rides_count,
+    COUNT(o.id) FILTER (WHERE o.status = 'completed') AS finished_rides_count,
+    COUNT(o.id) FILTER (WHERE o.status = 'canceled') AS canceled_rides_count,
+    AVG(r.distance) AS average_distance,
+    MAX(r.distance) AS max_distance,
+    AVG(orat.mark) AS client_rating,
+    t.most_popular_tag
+FROM admin.users_view u
+LEFT JOIN private.balances b
+       ON b.user_id = u.id
+      AND b.balance_type = 'payment'
+LEFT JOIN private.orders o
+       ON o.client_id = u.id
+LEFT JOIN (
+    SELECT
+        order_id,
+        MAX(distance) AS distance
+    FROM private.routes
+    GROUP BY order_id
+) r ON r.order_id = o.id
+LEFT JOIN private.order_ratings orat
+       ON orat.order_id = o.id
+      AND orat.mark_by != o.client_id
+LEFT JOIN (
+    SELECT
+        oct.order_id,
+        mode() WITHIN GROUP (ORDER BY oct.tag) AS most_popular_tag
+    FROM private.order_client_tags oct
+    GROUP BY oct.order_id
+) t ON t.order_id = o.id
+GROUP BY
+    u.id,
+    b.balance,
+    t.most_popular_tag,
+    u.email,
+    u.tel_number,
+    u.first_name,
+    u.last_name,
+    u.country,
+    u.role,
+    u.city,
+    u.created_at,
+    u.changed_at;
 
 CREATE OR REPLACE VIEW admin.drivers_view AS
 SELECT
     u.*,
     b_e.balance AS earning_balance,
     b_p.balance AS payment_balance,
-    c.id AS car_id
-FROM admin.users_view AS u
-LEFT JOIN private.cars AS c ON c.driver_id = u.id
-LEFT JOIN private.balances AS b_e ON u.id = b_e.user_id AND b_e.balance_type = 'earning'
-LEFT JOIN private.balances AS b_p ON u.id = b_p.user_id AND b_p.balance_type = 'payment'
-WHERE u.role = 'driver';
+    c.id AS car_id,
+    COUNT(o.id) AS rides_count,
+    COUNT(o.id) FILTER (WHERE o.status = 'completed') AS finished_rides_count,
+    COUNT(o.id) FILTER (WHERE o.status = 'canceled') AS canceled_rides_count,
+    AVG(r.distance) AS average_distance,
+    MAX(r.distance) AS max_distance,
+    AVG(orat.mark) AS driver_rating,
+    t.most_popular_tag
+FROM admin.users_view u
+LEFT JOIN private.balances b_e
+       ON b_e.user_id = u.id
+      AND b_e.balance_type = 'earning'
+LEFT JOIN private.balances b_p
+       ON b_p.user_id = u.id
+      AND b_p.balance_type = 'payment'
+LEFT JOIN LATERAL (
+    SELECT id
+    FROM private.cars
+    WHERE driver_id = u.id
+    ORDER BY id
+    LIMIT 1
+) c ON true
+LEFT JOIN private.orders o
+       ON o.driver_id = u.id
+LEFT JOIN (
+    SELECT
+        order_id,
+        MAX(distance) AS distance
+    FROM private.routes
+    GROUP BY order_id
+) r ON r.order_id = o.id
+LEFT JOIN private.order_ratings orat
+       ON orat.order_id = o.id
+      AND orat.mark_by != o.driver_id
+LEFT JOIN (
+    SELECT
+        oct.order_id,
+        mode() WITHIN GROUP (ORDER BY oct.tag) AS most_popular_tag
+    FROM private.order_driver_tags oct
+    GROUP BY oct.order_id
+) t ON t.order_id = o.id
+WHERE u.role = 'driver'
+GROUP BY
+    u.id,
+    b_e.balance,
+    b_p.balance,
+    c.id,
+    t.most_popular_tag,
+    u.email,
+    u.tel_number,
+    u.first_name,
+    u.last_name,
+    u.country,
+    u.role,
+    u.city,
+    u.created_at,
+    u.changed_at;
+
 
 CREATE OR REPLACE VIEW admin.admins_view AS
 SELECT

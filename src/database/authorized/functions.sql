@@ -151,3 +151,14 @@ BEGIN
     END IF;
 END;
 $$ LANGUAGE plpgsql;
+
+CREATE OR REPLACE FUNCTION authorized.get_profile() RETURNS admin.users_view SECURITY DEFINER AS $$
+DECLARE
+    p_client_id BIGINT;
+    p_client_info admin.users_view;
+BEGIN
+    p_client_id := public.get_current_user();
+    p_client_info := (SELECT * FROM admin.users_view WHERE id = p_client_id);
+    return p_client_info;
+END;
+$$ LANGUAGE plpgsql;

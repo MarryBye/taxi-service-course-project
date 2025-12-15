@@ -1,17 +1,16 @@
-from src.controllers.database import database
+from src.controllers.database import Database
 from src.schemas.auth import AuthUserSchema
-from src.schemas.users import CreateUserSchema, UpdateUserSchema
-from src.enums.roles import UserRole
+from src.schemas.users import AdminCreateUserSchema, UpdateUserSchema
+from src.schemas.token import TokenDataSchema
+from src.enums.db import UserRole
 
 class UsersService:
     @staticmethod
-    def list(limit: int = 10, offset: int = 0, executor: AuthUserSchema = None, **kwargs):
-        query = """SELECT * FROM admin.users_view LIMIT %s OFFSET %s"""
-
-
-
+    def list(limit: int = 10, offset: int = 0, user: TokenDataSchema = None):
+        db =  Database(user=user)
+        query = """SELECT * FROM list_users(%s, %s)"""
         params = [limit, offset]
-        return database.execute(query, params=params, fetch_count=-1, executor_data=executor)
+        return db.execute(query, params=params, fetch_count=-1)
     
     @staticmethod
     def get(id: int, executor: AuthUserSchema = None):
