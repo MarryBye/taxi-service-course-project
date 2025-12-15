@@ -22,6 +22,7 @@ CREATE TYPE public.order_statuses AS ENUM (
     'waiting_for_driver',
     'waiting_for_client',
     'in_progress',
+    'waiting_for_marks',
     'canceled',
     'completed'
 );
@@ -49,6 +50,14 @@ CREATE TYPE public.user_roles AS ENUM (
     'client'
 );
 
+CREATE TYPE public.city_names AS ENUM (
+    'Kyiv',
+    'Lviv',
+    'Odessa',
+    'Dnipro',
+    'Kharkiv'
+);
+
 CREATE TYPE public.client_tags AS ENUM (
     'accurate',
     'friendly',
@@ -68,12 +77,16 @@ CREATE TYPE public.driver_tags AS ENUM (
     'helpful'
 );
 
-CREATE TYPE public.city_names AS ENUM (
-    'Kyiv',
-    'Lviv',
-    'Odessa',
-    'Dnipro',
-    'Kharkiv'
+CREATE TYPE public.driver_cancel_tags AS ENUM (
+    'reason 1',
+    'reason 2',
+    'reason 3'
+);
+
+CREATE TYPE public.client_cancel_tags AS ENUM (
+    'reason 1',
+    'reason 2',
+    'reason 3'
 );
 
 CREATE TYPE public.country_names AS ENUM (

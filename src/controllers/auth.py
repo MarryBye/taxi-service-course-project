@@ -39,8 +39,6 @@ class AuthController:
             )
         )
 
-        req.session["TOKEN"] = token
-
         result = TokenSchema(access_token=token, token_type="bearer")
 
         return result
@@ -57,9 +55,6 @@ class AuthController:
         if isinstance(user, Exception):
             raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail=str(user))
 
-        if not user:
-            raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="Can`t create user with this data")
-
         return JSONResponse("Successfully signed up!", status_code=status.HTTP_200_OK)
     
     @staticmethod
@@ -67,8 +62,5 @@ class AuthController:
         req: Request,
         user: TokenDataSchema
     ) -> JSONResponse:
-        # req.session.clear()
-
-        print(user)
 
         return JSONResponse("Successfully signed out!", status_code=status.HTTP_200_OK)

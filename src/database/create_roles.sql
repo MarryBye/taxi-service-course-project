@@ -17,18 +17,23 @@ GRANT "driver" TO "admin" WITH ADMIN OPTION;
 CREATE SCHEMA "private" AUTHORIZATION "postgres";
 CREATE SCHEMA "admin" AUTHORIZATION "postgres";
 CREATE SCHEMA "authorized" AUTHORIZATION "postgres";
+CREATE SCHEMA "workers" AUTHORIZATION "postgres";
 
 REVOKE ALL ON SCHEMA "private" FROM PUBLIC;
 REVOKE ALL ON SCHEMA "admin" FROM PUBLIC;
 REVOKE ALL ON SCHEMA "authorized" FROM PUBLIC;
+REVOKE ALL ON SCHEMA "workers" FROM PUBLIC;
 
 GRANT USAGE ON SCHEMA "admin" TO "admin";
 GRANT USAGE ON SCHEMA "authorized" TO "admin", "client", "driver";
+GRANT USAGE ON SCHEMA "workers" TO "admin", "driver";
 
 GRANT EXECUTE ON ALL FUNCTIONS IN SCHEMA "admin" TO "admin";
 GRANT EXECUTE ON ALL PROCEDURES IN SCHEMA "admin" TO "admin";
 GRANT EXECUTE ON ALL FUNCTIONS IN SCHEMA "authorized" TO "admin", "client", "driver";
 GRANT EXECUTE ON ALL PROCEDURES IN SCHEMA "authorized" TO "admin", "client", "driver";
+GRANT EXECUTE ON ALL FUNCTIONS IN SCHEMA "workers" TO "admin", "driver";
+GRANT EXECUTE ON ALL PROCEDURES IN SCHEMA "workers" TO "admin", "driver";
 
 GRANT SELECT ON TABLE
     admin.users_view,

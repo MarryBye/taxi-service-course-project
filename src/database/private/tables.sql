@@ -30,16 +30,30 @@ CREATE TABLE IF NOT EXISTS private.cars (
     changed_at TIMESTAMP NOT NULL DEFAULT NOW()
 );
 
+CREATE TABLE IF NOT EXISTS private.transactions (
+	id BIGINT GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
+	user_id BIGINT NOT NULL REFERENCES private.users(id) ON DELETE CASCADE,
+    balance_type public.balance_types NOT NULL,
+    transaction_type public.transaction_type NOT NULL,
+    payment_method public.payment_methods NOT NULL,
+    amount NUMERIC NOT NULL DEFAULT 0 CHECK (amount >= 0),
+
+    created_at TIMESTAMP NOT NULL DEFAULT NOW()
+);
+
 CREATE TABLE IF NOT EXISTS private.orders (
 	id BIGINT GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
 	client_id BIGINT NOT NULL REFERENCES private.users(id) ON DELETE CASCADE,
     driver_id BIGINT REFERENCES private.users(id) ON DELETE SET NULL,
+    transaction_id BIGINT NOT NULL REFERENCES private.transactions(id),
     status public.order_statuses NOT NULL DEFAULT 'searching_for_driver',
     order_class public.car_classes NOT NULL DEFAULT 'standard',
     finished_at TIMESTAMP,
 
     created_at TIMESTAMP NOT NULL DEFAULT NOW(),
-    changed_at TIMESTAMP NOT NULL DEFAULT NOW()
+    changed_at TIMESTAMP NOT NULL DEFAULT NOW(),
+
+    UNIQUE(client_id, driver_id)
 );
 
 CREATE TABLE IF NOT EXISTS private.order_ratings (
@@ -78,18 +92,6 @@ CREATE TABLE IF NOT EXISTS private.order_driver_tags (
     order_id BIGINT NOT NULL REFERENCES private.orders(id) ON DELETE CASCADE,
     tag public.driver_tags NOT NULL,
     UNIQUE(order_id, tag),
-
-    created_at TIMESTAMP NOT NULL DEFAULT NOW()
-);
-
-CREATE TABLE IF NOT EXISTS private.transactions (
-	id BIGINT GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
-	user_id BIGINT NOT NULL REFERENCES private.users(id) ON DELETE CASCADE,
-    balance_type public.balance_types NOT NULL,
-    transaction_type public.transaction_type NOT NULL,
-    payment_method public.payment_methods NOT NULL,
-    amount NUMERIC NOT NULL DEFAULT 0 CHECK (amount >= 0),
-    order_id BIGINT REFERENCES private.orders(id) ON DELETE SET NULL,
 
     created_at TIMESTAMP NOT NULL DEFAULT NOW()
 );

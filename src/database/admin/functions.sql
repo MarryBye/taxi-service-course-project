@@ -129,6 +129,7 @@ END;
 $$ LANGUAGE plpgsql;
 
 CREATE OR REPLACE PROCEDURE admin.update_user(
+    p_user_id BIGINT,
     p_email VARCHAR(128),
     p_tel_number VARCHAR(32),
     p_password VARCHAR(512),
@@ -138,6 +139,8 @@ CREATE OR REPLACE PROCEDURE admin.update_user(
     p_city public.city_names,
     p_role public.user_roles
 ) SECURITY DEFINER AS $$
+DECLARE
+    updated_user_login VARCHAR(32);
 BEGIN
     UPDATE private.users
     SET
@@ -149,14 +152,15 @@ BEGIN
         country = coalesce(p_country, country),
         city = coalesce(p_city, city),
         role = coalesce(p_role, role)
-    WHERE login = current_user;
+    WHERE id = p_user_id
+    RETURNING login INTO updated_user_login;;
 
     IF (NOT p_role IS NULL) THEN
-        CALL admin.set_psql_user_role(current_user, p_role);
+        CALL admin.set_psql_user_role(updated_user_login, p_role);
     END IF;
 
     IF (NOT p_password IS NULL) THEN
-        CALL admin.change_psql_user_password(current_user, p_password);
+        CALL admin.change_psql_user_password(updated_user_login, p_password);
     END IF;
 END;
 $$ LANGUAGE plpgsql;
@@ -234,21 +238,23 @@ CREATE OR REPLACE PROCEDURE admin.create_order(
     p_driver_id BIGINT DEFAULT NULL
 ) SECURITY DEFINER AS $$
 DECLARE
+    new_transaction_id BIGINT;
     new_order_id BIGINT;
     new_route_id BIGINT;
     i INT;
     ad address;
 BEGIN
-    INSERT INTO private.orders
-        (client_id, driver_id, status, order_class)
-    VALUES
-        (p_client_id, p_driver_id, p_status, p_order_class)
-    RETURNING id INTO new_order_id;
-
     INSERT INTO private.transactions
-        (user_id, balance_type, transaction_type, payment_method, amount, order_id)
+        (user_id, balance_type, transaction_type, payment_method, amount)
     VALUES
-        (p_client_id, 'payment', 'debit', p_payment_method, p_amount, new_order_id);
+        (p_client_id, 'payment', 'debit', p_payment_method, p_amount)
+    RETURNING id INTO new_transaction_id;
+
+    INSERT INTO private.orders
+        (client_id, driver_id, status, order_class, transaction_id)
+    VALUES
+        (p_client_id, p_driver_id, p_status, p_order_class, new_transaction_id)
+    RETURNING id INTO new_order_id;
 
     INSERT INTO private.routes
         (order_id, start_location, end_location, distance)

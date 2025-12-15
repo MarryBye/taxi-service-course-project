@@ -64,10 +64,10 @@ SELECT
     o.changed_at,
     o.client_id,
     o.driver_id,
+    o.transaction_id,
     orat_client.id AS client_rating_id,
     orat_driver.id AS driver_rating_id,
     ocan.id AS cancel_id,
-    t.id AS transaction_id,
     r.id AS route_id
 FROM private.orders AS o
 JOIN private.users AS client ON o.client_id = client.id
@@ -78,7 +78,6 @@ LEFT JOIN private.order_ratings AS orat_driver ON
     o.id = orat_driver.order_id AND orat_driver.mark_by = o.driver_id
 LEFT JOIN private.order_cancels AS ocan ON
     o.id = ocan.order_id
-JOIN private.transactions AS t ON o.id = t.order_id AND t.user_id = o.client_id
 JOIN private.routes AS r ON o.id = r.order_id;
 
 CREATE OR REPLACE VIEW admin.maintenance_view AS
@@ -94,6 +93,5 @@ SELECT
     t.balance_type,
     t.created_at,
     t.user_id,
-    t.order_id,
     t.payment_method
 FROM private.transactions AS t;

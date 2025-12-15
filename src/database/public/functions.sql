@@ -28,3 +28,9 @@ BEGIN
         WHERE u.login = p_login;
 END;
 $$ LANGUAGE plpgsql;
+
+CREATE OR REPLACE FUNCTION get_current_user() RETURNS BIGINT SECURITY DEFINER AS $$
+BEGIN
+    RETURN (SELECT id from private.users WHERE login = current_user);
+END;
+$$ LANGUAGE plpgsql;
