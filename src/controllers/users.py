@@ -1,59 +1,80 @@
 from fastapi import HTTPException, status, Request
 from fastapi.responses import JSONResponse
 from src.services.users_service import UsersService
-from src.schemas.users import UserSchema, CreateUserSchema, UpdateUserSchema
-from src.schemas.auth import AuthUserSchema
+from src.schemas.users import AdminCreateUserSchema, AdminUpdateUserSchema, UserSchema
+from src.schemas.token import TokenDataSchema
 
 
 class UsersController:
     @staticmethod
-    def list_view(
+    def list(
             req: Request,
-            current_user: AuthUserSchema
+            current_user: TokenDataSchema
     ) -> list[UserSchema]:
-        users = UsersService.list(executor=current_user)
+        result = UsersService.list(user=current_user)
 
-        if not users:
+        if isinstance(result, Exception):
+            raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail=str(result))
+
+        if not result:
             raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Error getting users")
 
-        return users
+        return result
     
     @staticmethod
-    def detail_view(
+    def detail(
             req: Request,
             user_id: int,
-            current_user: AuthUserSchema
+            current_user: TokenDataSchema
     ) -> UserSchema:
-        user = UsersService.get(user_id, executor=current_user)
-        if not user:
+        result = UsersService.get(user_id, user=current_user)
+
+        if isinstance(result, Exception):
+            raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail=str(result))
+
+        if not result:
             raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="User not found")
-        return user
+
+        return result
     
     @staticmethod
-    def create_view(
+    def create(
             req: Request,
-            schema: CreateUserSchema,
-            current_user: AuthUserSchema
-    ) -> UserSchema:
-        # schema.hash_password()
-        user = UsersService.create(schema, executor=current_user)
-        return user
-    
-    @staticmethod
-    def update_view(
-            req: Request,
-            user_id: int,
-            schema: UpdateUserSchema,
-            current_user: AuthUserSchema
-    ) -> UserSchema:
-        # schema.hash_password()
-        user = UsersService.update(user_id, schema, executor=current_user)
-        return user
-    
-    @staticmethod
-    def delete_view(
-            user_id: int,
-            current_user: AuthUserSchema
+            schema: AdminCreateUserSchema,
+            current_user: TokenDataSchema
     ) -> JSONResponse:
-        UsersService.delete(user_id, executor=current_user)
+        schema.hash_password()
+        result = UsersService.create(schema, user=current_user)
+
+        if isinstance(result, Exception):
+            raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail=str(result))
+
+        return JSONResponse(status_code=status.HTTP_200_OK, content={"detail": "User created successfully"})
+    
+    @staticmethod
+    def update(
+            req: Request,
+            user_id: int,
+            schema: AdminUpdateUserSchema,
+            current_user: TokenDataSchema
+    ) -> JSONResponse:
+        schema.hash_password()
+        result = UsersService.update(user_id, schema, user=current_user)
+
+        if isinstance(result, Exception):
+            raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail=str(result))
+
+        return JSONResponse(status_code=status.HTTP_200_OK, content={"detail": "User updated successfully"})
+    
+    @staticmethod
+    def delete(
+            req: Request,
+            user_id: int,
+            current_user: TokenDataSchema
+    ) -> JSONResponse:
+        result = UsersService.delete(user_id, user=current_user)
+
+        if isinstance(result, Exception):
+            raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail=str(result))
+
         return JSONResponse(status_code=status.HTTP_200_OK, content={"detail": "User deleted successfully"})

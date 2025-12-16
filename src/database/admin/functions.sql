@@ -21,12 +21,6 @@ BEGIN
     IF p_login = 'postgres' THEN
         RAISE EXCEPTION 'You cannot change role for postgres user';
     END IF;
-    IF p_role = 'guest' THEN
-        RAISE EXCEPTION 'You cannot set guest role for user';
-    END IF;
-    IF p_role = 'postgres' THEN
-        RAISE EXCEPTION 'You cannot set postgres role for user';
-    END IF;
     EXECUTE FORMAT('REVOKE guest, client, driver, admin FROM %I;', p_login);
     EXECUTE FORMAT('GRANT %I TO %I;', p_role, p_login);
 END;
@@ -122,18 +116,19 @@ $$ LANGUAGE plpgsql;
 
 CREATE OR REPLACE PROCEDURE admin.update_user(
     p_user_id BIGINT,
-    p_email VARCHAR(128),
-    p_tel_number VARCHAR(32),
-    p_password VARCHAR(512),
-    p_first_name VARCHAR(32),
-    p_last_name VARCHAR(32),
-    p_country public.country_names,
-    p_city public.city_names,
-    p_role public.user_roles
+    p_email VARCHAR(128) DEFAULT NULL,
+    p_tel_number VARCHAR(32) DEFAULT NULL,
+    p_password VARCHAR(512) DEFAULT NULL,
+    p_first_name VARCHAR(32) DEFAULT NULL,
+    p_last_name VARCHAR(32) DEFAULT NULL,
+    p_country public.country_names DEFAULT NULL,
+    p_city public.city_names DEFAULT NULL,
+    p_role public.user_roles DEFAULT NULL
 ) SECURITY DEFINER AS $$
 DECLARE
     updated_user_login VARCHAR(32);
 BEGIN
+    RAISE NOTICE 'Role %s', p_role;
     UPDATE private.users
     SET
         email = coalesce(p_email, email),
