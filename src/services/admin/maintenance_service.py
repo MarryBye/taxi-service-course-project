@@ -27,7 +27,7 @@ class MaintenanceService:
             schema.cost,
             schema.status
         ]
-        return db.execute(query, params=params, fetch_count=1)
+        return db.execute(query, params=params, fetch_count=0)
 
     @staticmethod
     def update(id: int, schema: UpdateMaintenanceSchema, user: TokenDataSchema = None):
@@ -39,7 +39,7 @@ class MaintenanceService:
             schema.cost,
             schema.status
         ]
-        return db.execute(query, params=params, fetch_count=1)
+        return db.execute(query, params=params, fetch_count=0)
 
     @staticmethod
     def delete(id: int, user: TokenDataSchema = None):

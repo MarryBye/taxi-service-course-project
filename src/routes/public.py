@@ -7,8 +7,8 @@ from src.utils.auth import Auth
 
 router = APIRouter(prefix='/public')
 
-@router.get('/current_user')
-async def current_user(
+@router.get('/me')
+async def me(
         req: Request,
         current_user: TokenDataSchema = Depends(Auth.verify_user)
 ) -> CurrentUserSchema:

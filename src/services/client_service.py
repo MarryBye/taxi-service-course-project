@@ -61,7 +61,7 @@ class ClientService:
     def rate_order_by_client(schema: RateOrderSchema, user: TokenDataSchema = None):
         db = Database(user=user)
 
-        query = "CALL authorized.rate_order(%s, %s, %s)"
+        query = "CALL authorized.rate_order_by_client(%s, %s, %s)"
         params = [
             schema.mark,
             schema.comment,
@@ -74,7 +74,7 @@ class ClientService:
     def update_profile(schema: UpdateProfileSchema, user: TokenDataSchema = None):
         db = Database(user=user)
 
-        query = "CALL authorized.update_profile(%s, %s, %s, %s, %s, %s)"
+        query = "CALL authorized.update_profile(%s, %s, %s, %s, %s, %s, %s)"
         params = [
             schema.email,
             schema.tel_number,

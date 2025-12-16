@@ -21,4 +21,4 @@ class TransactionService:
             schema.payment_method,
             schema.amount
         ]
-        return db.execute(query, params=params, fetch_count=1)
+        return db.execute(query, params=params, fetch_count=0)

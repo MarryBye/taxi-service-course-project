@@ -3,7 +3,7 @@ from src.schemas.drivers import AcceptOrderSchema, CancelOrderSchema, RateOrderS
 from src.schemas.token import TokenDataSchema
 
 
-class ClientService:
+class WorkersService:
     @staticmethod
     def accept_order(schema: AcceptOrderSchema, user: TokenDataSchema = None):
         db = Database(user=user)
@@ -40,7 +40,7 @@ class ClientService:
     def complete_order(user: TokenDataSchema = None):
         db = Database(user=user)
 
-        query = "CALL complete_order()"
+        query = "CALL workers.complete_order()"
         params = []
 
         return db.execute(query, params=params, fetch_count=0)

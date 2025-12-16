@@ -30,7 +30,7 @@ class OrdersService:
             schema.addresses,
             schema.driver_id
         ]
-        return db.execute(query, params=params, fetch_count=1)
+        return db.execute(query, params=params, fetch_count=0)
 
     @staticmethod
     def update(id: int, schema: AdminUpdateOrderSchema, user: TokenDataSchema = None):
@@ -41,7 +41,7 @@ class OrdersService:
             schema.status,
             schema.order_class
         ]
-        return db.execute(query, params=params, fetch_count=1)
+        return db.execute(query, params=params, fetch_count=0)
 
     @staticmethod
     def delete(id: int, user: TokenDataSchema = None):

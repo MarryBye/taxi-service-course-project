@@ -19,7 +19,7 @@ class CarsService:
     @staticmethod
     def create(schema: CreateCarSchema, user: TokenDataSchema = None):
         db = Database(user=user)
-        query = "CALL admin.create_car(%s, %s, %s, %s, %s, %s, %s, %s, %s"
+        query = "CALL admin.create_car(%s, %s, %s, %s, %s, %s, %s, %s, %s)"
         params = [
             schema.mark,
             schema.model,
