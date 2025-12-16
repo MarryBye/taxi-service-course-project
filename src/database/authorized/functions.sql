@@ -121,13 +121,13 @@ END;
 $$ LANGUAGE plpgsql;
 
 CREATE OR REPLACE PROCEDURE authorized.update_profile(
-    p_email VARCHAR(128),
-    p_tel_number VARCHAR(32),
-    p_password VARCHAR(512),
-    p_first_name VARCHAR(32),
-    p_last_name VARCHAR(32),
-    p_country public.country_names,
-    p_city public.city_names
+    p_email VARCHAR(128) DEFAULT NULL,
+    p_tel_number VARCHAR(32) DEFAULT NULL,
+    p_password VARCHAR(512) DEFAULT NULL,
+    p_first_name VARCHAR(32) DEFAULT NULL,
+    p_last_name VARCHAR(32) DEFAULT NULL,
+    p_country public.country_names DEFAULT NULL,
+    p_city public.city_names DEFAULT NULL
 ) SECURITY DEFINER AS $$
 DECLARE
     p_client_id BIGINT;
@@ -152,13 +152,13 @@ BEGIN
 END;
 $$ LANGUAGE plpgsql;
 
-CREATE OR REPLACE FUNCTION authorized.get_profile() RETURNS admin.users_view SECURITY DEFINER AS $$
+CREATE OR REPLACE FUNCTION authorized.get_profile() RETURNS admin.clients_view SECURITY DEFINER AS $$
 DECLARE
     p_client_id BIGINT;
     p_client_info admin.users_view;
 BEGIN
     p_client_id := public.get_current_user();
-    p_client_info := (SELECT * FROM admin.users_view WHERE id = p_client_id);
+    p_client_info := (SELECT * FROM admin.clients_view WHERE id = p_client_id);
     return p_client_info;
 END;
 $$ LANGUAGE plpgsql;

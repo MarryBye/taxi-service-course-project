@@ -1,9 +1,21 @@
 from pydantic import BaseModel, Field
 from typing import Optional
 from datetime import datetime
-from src.enums.db import UserRole, CountryName, CityName, DriverTag
+from src.enums.db import UserRole, CountryName, CityName, ClientTag, ClientCancelTag, DriverTag
 from src.schemas.mixins.hashable_password import WithHashablePassword
 from src.schemas.users import *
+
+class AcceptOrderSchema(BaseModel):
+    order_id: int = Field(..., alias="order_id", description="Order ID")
+
+class CancelOrderSchema(BaseModel):
+    comment: str = Field(..., alias="comment", description="Order cancellation comment")
+    client_tags: list[ClientCancelTag] = Field(..., alias="client_tags", description="Client tags")
+
+class RateOrderSchema(BaseModel):
+    mark: int = Field(..., alias="mark", description="Order rating mark")
+    comment: Optional[str] = Field(None, alias="comment", description="Order rating comment")
+    client_tags: list[ClientTag] = Field(..., alias="client_tags", description="Client tags")
 
 class DriverSchema(UserSchema):
     earning_balance: int = Field(..., alias="earning_balance", description="Driver's earning balance")

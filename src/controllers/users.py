@@ -1,6 +1,6 @@
 from fastapi import HTTPException, status, Request
 from fastapi.responses import JSONResponse
-from src.services.users_service import UsersService
+from src.services.admin.users_service import UsersService
 from src.schemas.users import AdminCreateUserSchema, AdminUpdateUserSchema, UserSchema
 from src.schemas.token import TokenDataSchema
 
