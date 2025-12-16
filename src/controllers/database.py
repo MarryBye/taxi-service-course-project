@@ -40,10 +40,12 @@ class Database:
                 case 0: result = None
                 case -1: result = self.__cursor.fetchall()
                 case _: result = self.__cursor.fetchmany(fetch_count)
-        except sql_err.ProgrammingError:
+        except sql_err.ProgrammingError as e:
+            print(f"[DATABASE]: {e}")
             result = None
         except Exception as e:
             result = e
+            print(f"[DATABASE]: {e}")
             self.__connection.rollback()
         finally:
             self.__connection.commit()

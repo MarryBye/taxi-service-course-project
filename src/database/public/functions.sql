@@ -34,3 +34,5 @@ BEGIN
     RETURN (SELECT id from private.users WHERE login = current_user);
 END;
 $$ LANGUAGE plpgsql;
+
+SELECT * FROM public.get_current_user()
