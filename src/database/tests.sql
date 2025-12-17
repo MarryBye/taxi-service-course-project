@@ -62,3 +62,18 @@ SELECT * FROM admin.users_view;
 SELECT * FROM public.auth(
     'test_admin'
 );
+
+CALL admin.create_user(
+    'Viktor2',
+    'viktor2@gmail.com',
+    '+38-222-000-00-05',
+    '1111',
+    'Viktor',
+    'Ivanovich',
+    'Ukraine',
+    'Odessa',
+    'driver'
+);
+SET ROLE "admin";
+SELECT * FROM private.users;
+RESET ROLE;

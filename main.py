@@ -7,7 +7,6 @@ from src.routes.clients import router as clients_router
 from src.routes.maintenances import router as maintenances_router
 from src.routes.orders import router as orders_router
 from src.routes.drivers import router as drivers_router
-from src.routes.public import router as public_router
 from src.routes.transactions import router as transactions_router
 
 app = FastAPI()
@@ -30,5 +29,4 @@ app.include_router(clients_router, tags=["Clients"], prefix="/api")
 app.include_router(maintenances_router, tags=["Maintenances"], prefix="/api")
 app.include_router(orders_router, tags=["Orders"], prefix="/api")
 app.include_router(drivers_router, tags=["Drivers"], prefix="/api")
-app.include_router(public_router, tags=["Public"], prefix="/api")
 app.include_router(transactions_router, tags=["Transactions"], prefix="/api")

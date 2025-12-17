@@ -1,10 +1,10 @@
-CREATE OR REPLACE FUNCTION workers.get_current_order()
+CREATE OR REPLACE FUNCTION workers.get_current_order(
+    p_driver_id BIGINT
+)
 RETURNS admin.orders_view SECURITY DEFINER AS $$
 DECLARE
     result admin.orders_view;
-    p_driver_id BIGINT;
 BEGIN
-    p_driver_id := public.get_current_user();
     SELECT * INTO result FROM admin.orders_view AS ov
     WHERE ov.driver_id = p_driver_id AND
           ov.status != 'canceled' AND
@@ -16,13 +16,13 @@ BEGIN
 END;
 $$ LANGUAGE plpgsql;
 
-CREATE OR REPLACE FUNCTION workers.get_acceptable_orders() RETURNS SETOF admin.orders_view SECURITY DEFINER AS $$
+CREATE OR REPLACE FUNCTION workers.get_acceptable_orders(
+    p_driver_id BIGINT
+) RETURNS SETOF admin.orders_view SECURITY DEFINER AS $$
 DECLARE
-    p_driver_id BIGINT;
     has_current_order BOOLEAN;
 BEGIN
-    p_driver_id := public.get_current_user();
-    has_current_order := (SELECT id FROM workers.get_current_order()) IS NOT NULL;
+    has_current_order := (SELECT id FROM workers.get_current_order(p_driver_id)) IS NOT NULL;
     IF (has_current_order) THEN
         RAISE EXCEPTION 'You have an active order';
     END IF;
@@ -42,14 +42,13 @@ END;
 $$ LANGUAGE plpgsql;
 
 CREATE OR REPLACE PROCEDURE workers.accept_order(
+    p_driver_id BIGINT,
     p_order_id BIGINT
 ) SECURITY DEFINER AS $$
 DECLARE
-    p_driver_id BIGINT;
     has_current_order BOOLEAN;
 BEGIN
-    p_driver_id := public.get_current_user();
-    has_current_order := (SELECT id FROM workers.get_current_order()) IS NOT NULL;
+    has_current_order := (SELECT id FROM workers.get_current_order(p_driver_id)) IS NOT NULL;
     IF (has_current_order) THEN
         RAISE EXCEPTION 'You have an active order';
     END IF;
@@ -59,11 +58,13 @@ BEGIN
 END;
 $$ LANGUAGE plpgsql;
 
-CREATE OR REPLACE PROCEDURE workers.submit_arriving_time() SECURITY DEFINER AS $$
+CREATE OR REPLACE PROCEDURE workers.submit_arriving_time(
+    p_driver_id BIGINT
+) SECURITY DEFINER AS $$
 DECLARE
     current_order admin.orders_view%ROWTYPE;
 BEGIN
-    current_order := workers.get_current_order();
+    current_order := workers.get_current_order(p_driver_id);
     IF current_order.id IS NULL THEN
         RAISE EXCEPTION 'You have no active order';
     END IF;
@@ -72,16 +73,15 @@ END;
 $$ LANGUAGE plpgsql;
 
 CREATE OR REPLACE PROCEDURE workers.cancel_order(
+    p_driver_id BIGINT,
     p_comment VARCHAR(256),
     p_client_tags public.client_cancel_tags[]
 ) SECURITY DEFINER AS $$
 DECLARE
-    p_driver_id BIGINT;
     current_order admin.orders_view%ROWTYPE;
     tag public.client_cancel_tags;
 BEGIN
-    p_driver_id := public.get_current_user();
-    current_order := workers.get_current_order();
+    current_order := workers.get_current_order(p_driver_id);
     IF (current_order.id IS NULL) THEN
         RAISE EXCEPTION 'You have no active order';
     END IF;
@@ -100,18 +100,17 @@ END;
 $$ LANGUAGE plpgsql;
 
 CREATE OR REPLACE PROCEDURE workers.rate_order_by_driver(
+    p_driver_id BIGINT,
     p_mark INT,
     p_comment VARCHAR(256),
     p_client_tags public.client_tags[]
 ) SECURITY DEFINER AS $$
 DECLARE
-    p_driver_id BIGINT;
     current_order admin.orders_view%ROWTYPE;
     is_waiting_for_mark BOOLEAN;
     tag public.client_tags;
 BEGIN
-    p_driver_id := public.get_current_user();
-    current_order := workers.get_current_order();
+    current_order := workers.get_current_order(p_driver_id);
     IF (current_order.id IS NULL) THEN
         RAISE EXCEPTION 'You have not active orders to mark';
     END IF;
@@ -132,13 +131,13 @@ BEGIN
 END;
 $$ LANGUAGE plpgsql;
 
-CREATE OR REPLACE PROCEDURE workers.complete_order() SECURITY DEFINER AS $$
+CREATE OR REPLACE PROCEDURE workers.complete_order(
+    p_driver_id BIGINT
+) SECURITY DEFINER AS $$
 DECLARE
-    p_driver_id BIGINT;
     current_order admin.orders_view%ROWTYPE;
 BEGIN
-    p_driver_id := public.get_current_user();
-    current_order := workers.get_current_order();
+    current_order := workers.get_current_order(p_driver_id);
     IF (current_order.id IS NULL) THEN
         RAISE EXCEPTION 'You have no active order';
     END IF;
@@ -146,11 +145,10 @@ BEGIN
 END;
 $$ LANGUAGE plpgsql;
 
-CREATE OR REPLACE FUNCTION workers.get_driver_history() RETURNS SETOF admin.orders_view SECURITY DEFINER AS $$
-DECLARE
-    p_driver_id BIGINT;
+CREATE OR REPLACE FUNCTION workers.get_driver_history(
+    p_driver_id BIGINT
+) RETURNS SETOF admin.orders_view SECURITY DEFINER AS $$
 BEGIN
-    p_driver_id := public.get_current_user();
     RETURN QUERY
         SELECT * FROM admin.orders_view
         WHERE driver_id = p_driver_id
@@ -158,12 +156,12 @@ BEGIN
 END;
 $$ LANGUAGE plpgsql;
 
-CREATE OR REPLACE FUNCTION workers.get_own_stats() RETURNS admin.drivers_view SECURITY DEFINER AS $$
+CREATE OR REPLACE FUNCTION workers.get_own_stats(
+    p_driver_id BIGINT
+) RETURNS admin.drivers_view SECURITY DEFINER AS $$
 DECLARE
-    p_driver_id BIGINT;
     result admin.drivers_view;
 BEGIN
-    p_driver_id := public.get_current_user();
     result := (SELECT * FROM admin.drivers_view WHERE id = p_driver_id);
     RETURN result;
 END;

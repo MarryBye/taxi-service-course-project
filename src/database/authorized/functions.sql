@@ -1,10 +1,10 @@
-CREATE OR REPLACE FUNCTION authorized.get_current_order()
+CREATE OR REPLACE FUNCTION authorized.get_current_order(
+    p_client_id BIGINT
+)
 RETURNS admin.orders_view SECURITY DEFINER AS $$
 DECLARE
     result admin.orders_view;
-    p_client_id BIGINT;
 BEGIN
-    p_client_id := public.get_current_user();
     SELECT * INTO result FROM admin.orders_view AS ov
     WHERE ov.client_id = p_client_id AND
           ov.status != 'canceled' AND
@@ -17,6 +17,7 @@ END;
 $$ LANGUAGE plpgsql;
 
 CREATE OR REPLACE PROCEDURE authorized.make_order(
+    p_client_id BIGINT,
     p_order_class public.car_classes,
     p_payment_method public.payment_methods,
     p_amount NUMERIC,
@@ -24,10 +25,8 @@ CREATE OR REPLACE PROCEDURE authorized.make_order(
 ) SECURITY DEFINER AS $$
 DECLARE
     has_active_order BOOLEAN;
-    p_client_id BIGINT;
 BEGIN
-    p_client_id := public.get_current_user();
-    has_active_order := (SELECT id FROM authorized.get_current_order()) IS NOT NULL;
+    has_active_order := (SELECT id FROM authorized.get_current_order(p_client_id)) IS NOT NULL;
     IF (has_active_order) THEN
         RAISE EXCEPTION 'Client with id % already has active order', p_client_id;
     END IF;
@@ -42,11 +41,10 @@ BEGIN
 END;
 $$ LANGUAGE plpgsql;
 
-CREATE OR REPLACE FUNCTION authorized.get_client_history() RETURNS SETOF admin.orders_view SECURITY DEFINER AS $$
-DECLARE
-    p_client_id BIGINT;
+CREATE OR REPLACE FUNCTION authorized.get_client_history(
+    p_client_id BIGINT
+) RETURNS SETOF admin.orders_view SECURITY DEFINER AS $$
 BEGIN
-    p_client_id := public.get_current_user();
     RETURN QUERY
         SELECT * FROM admin.orders_view AS ov
         WHERE ov.client_id = p_client_id
@@ -55,18 +53,17 @@ END;
 $$ LANGUAGE plpgsql;
 
 CREATE OR REPLACE PROCEDURE authorized.rate_order_by_client(
+    p_client_id BIGINT,
     p_mark INT,
     p_comment VARCHAR(256),
     p_driver_tags public.driver_tags[]
 ) SECURITY DEFINER AS $$
 DECLARE
-    p_client_id BIGINT;
     current_order admin.orders_view%ROWTYPE;
     is_waiting_for_mark BOOLEAN;
     tag public.driver_tags;
 BEGIN
-    p_client_id := public.get_current_user();
-    current_order := (SELECT * FROM authorized.get_current_order());
+    current_order := (SELECT * FROM authorized.get_current_order(p_client_id));
     IF (current_order.id IS NULL) THEN
         RAISE EXCEPTION 'You have not active orders to mark';
     END IF;
@@ -88,16 +85,15 @@ END;
 $$ LANGUAGE plpgsql;
 
 CREATE OR REPLACE PROCEDURE authorized.cancel_current_order(
+    p_client_id BIGINT,
     p_comment VARCHAR(256),
     p_driver_tags public.driver_cancel_tags[]
 ) SECURITY DEFINER AS $$
 DECLARE
-    p_client_id BIGINT;
     current_order_id BIGINT;
     tag public.driver_cancel_tags;
 BEGIN
-    p_client_id := public.get_current_user();
-    current_order_id := (SELECT id FROM authorized.get_current_order());
+    current_order_id := (SELECT id FROM authorized.get_current_order(p_client_id));
 
     IF (current_order_id IS NULL) THEN
         RAISE EXCEPTION 'No active orders found for client with id %', p_client_id;
@@ -121,6 +117,7 @@ END;
 $$ LANGUAGE plpgsql;
 
 CREATE OR REPLACE PROCEDURE authorized.update_profile(
+    p_client_id BIGINT,
     p_email VARCHAR(128) DEFAULT NULL,
     p_tel_number VARCHAR(32) DEFAULT NULL,
     p_password VARCHAR(512) DEFAULT NULL,
@@ -130,10 +127,8 @@ CREATE OR REPLACE PROCEDURE authorized.update_profile(
     p_city public.city_names DEFAULT NULL
 ) SECURITY DEFINER AS $$
 DECLARE
-    p_client_id BIGINT;
     updated_user_login VARCHAR(32);
 BEGIN
-    p_client_id := public.get_current_user();
     UPDATE private.users
     SET
         email = coalesce(p_email, email),
@@ -145,20 +140,20 @@ BEGIN
         city = coalesce(p_city, city)
     WHERE id = p_client_id
     RETURNING login INTO updated_user_login;
-
-    IF (NOT p_password IS NULL) THEN
-        CALL admin.change_psql_user_password(updated_user_login, p_password);
-    END IF;
 END;
 $$ LANGUAGE plpgsql;
 
-CREATE OR REPLACE FUNCTION authorized.get_profile() RETURNS admin.clients_view SECURITY DEFINER AS $$
+CREATE OR REPLACE FUNCTION authorized.get_profile(
+    p_client_id BIGINT DEFAULT NULL
+) RETURNS admin.clients_view SECURITY DEFINER AS $$
 DECLARE
-    p_client_id BIGINT;
     p_client_info admin.clients_view;
 BEGIN
-    p_client_id := public.get_current_user();
-    SELECT * INTO p_client_info FROM admin.clients_view WHERE id = p_client_id;
+    IF (p_client_id IS NULL) THEN
+        p_client_info.role = 'guest';
+    ELSE
+        SELECT * INTO p_client_info FROM admin.clients_view WHERE id = p_client_id;
+    END IF;
     RETURN p_client_info;
 END;
 $$ LANGUAGE plpgsql;

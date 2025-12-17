@@ -47,7 +47,8 @@ CREATE TYPE public.balance_types AS ENUM (
 CREATE TYPE public.user_roles AS ENUM (
     'admin',
     'driver',
-    'client'
+    'client',
+    'guest'
 );
 
 CREATE TYPE public.city_names AS ENUM (

@@ -51,6 +51,7 @@ class UserRole(str, Enum):
     admin = "admin"
     driver = "driver"
     client = "client"
+    guest = "guest"
 
 
 class CityName(str, Enum):

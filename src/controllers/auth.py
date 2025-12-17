@@ -34,7 +34,6 @@ class AuthController:
             TokenDataSchema(
                 id = result.id,
                 login = result.login,
-                password = result.password,
                 role = result.role
             )
         )

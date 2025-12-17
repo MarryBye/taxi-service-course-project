@@ -1,5 +1,6 @@
 from fastapi import HTTPException, Request
 from fastapi.responses import JSONResponse
+from typing import Any
 from src.services.client_service import ClientService
 from src.schemas.clients import (
     CancelOrderSchema,
@@ -73,10 +74,13 @@ class ClientsController:
         return result
 
     @staticmethod
-    def profile(req: Request, current_user: TokenDataSchema) -> ClientSchema:
+    def profile(req: Request, current_user: TokenDataSchema) -> ClientSchema | None:
         result = ClientService.get_profile(user=current_user)
 
         if isinstance(result, Exception):
             raise HTTPException(400, str(result))
+
+        if not result:
+            raise HTTPException(404, "Profile not found")
 
         return result

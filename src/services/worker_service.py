@@ -8,8 +8,9 @@ class WorkersService:
     def accept_order(schema: AcceptOrderSchema, user: TokenDataSchema = None):
         db = Database(user=user)
 
-        query = "CALL workers.accept_order(%s)"
+        query = "CALL workers.accept_order(%s, %s)"
         params = [
+            user.id,
             schema.order_id
         ]
 
@@ -19,8 +20,9 @@ class WorkersService:
     def cancel_order(schema: CancelOrderSchema, user: TokenDataSchema = None):
         db = Database(user=user)
 
-        query = "CALL workers.cancel_order(%s, %s)"
+        query = "CALL workers.cancel_order(%s, %s, %s)"
         params = [
+            user.id,
             schema.comment,
             schema.client_tags
         ]
@@ -31,8 +33,10 @@ class WorkersService:
     def submit_arriving_time(user: TokenDataSchema = None):
         db = Database(user=user)
 
-        query = "CALL workers.submit_arriving_time()"
-        params = []
+        query = "CALL workers.submit_arriving_time(%s)"
+        params = [
+            user.id
+        ]
 
         return db.execute(query, params=params, fetch_count=0)
 
@@ -40,8 +44,10 @@ class WorkersService:
     def complete_order(user: TokenDataSchema = None):
         db = Database(user=user)
 
-        query = "CALL workers.complete_order()"
-        params = []
+        query = "CALL workers.complete_order(%s)"
+        params = [
+            user.id
+        ]
 
         return db.execute(query, params=params, fetch_count=0)
 
@@ -49,8 +55,10 @@ class WorkersService:
     def get_acceptable_orders(user: TokenDataSchema = None):
         db = Database(user=user)
 
-        query = "SELECT * FROM workers.get_acceptable_orders()"
-        params = []
+        query = "SELECT * FROM workers.get_acceptable_orders(%s)"
+        params = [
+            user.id
+        ]
 
         return db.execute(query, params=params, fetch_count=-1)
 
@@ -58,8 +66,10 @@ class WorkersService:
     def get_current_order(user: TokenDataSchema = None):
         db = Database(user=user)
 
-        query = "SELECT * FROM workers.get_current_order()"
-        params = []
+        query = "SELECT * FROM workers.get_current_order(%s)"
+        params = [
+            user.id
+        ]
 
         return db.execute(query, params=params, fetch_count=1)
 
@@ -67,8 +77,10 @@ class WorkersService:
     def get_driver_history(user: TokenDataSchema = None):
         db = Database(user=user)
 
-        query = "SELECT * FROM workers.get_driver_history()"
-        params = []
+        query = "SELECT * FROM workers.get_driver_history(%s)"
+        params = [
+            user.id
+        ]
 
         return db.execute(query, params=params, fetch_count=-1)
 
@@ -76,8 +88,9 @@ class WorkersService:
     def rate_order_by_driver(schema: RateOrderSchema, user: TokenDataSchema = None):
         db = Database(user=user)
 
-        query = "CALL workers.rate_order_by_driver(%s, %s, %s)"
+        query = "CALL workers.rate_order_by_driver(%s, %s, %s, %s)"
         params = [
+            user.id,
             schema.mark,
             schema.comment,
             schema.client_tags
@@ -89,7 +102,9 @@ class WorkersService:
     def get_own_stats(user: TokenDataSchema = None):
         db = Database(user=user)
 
-        query = "SELECT * FROM workers.get_own_stats()"
-        params = []
+        query = "SELECT * FROM workers.get_own_stats(%s)"
+        params = [
+            user.id
+        ]
 
         return db.execute(query, params=params, fetch_count=1)
