@@ -23,23 +23,18 @@ DECLARE
     has_current_order BOOLEAN;
 BEGIN
     has_current_order := (SELECT id FROM workers.get_current_order(p_driver_id)) IS NOT NULL;
-    IF (has_current_order) THEN
-        RAISE EXCEPTION 'You have an active order';
-    END IF;
     RETURN QUERY
-        SELECT o.* FROM private.orders AS o
-        JOIN private.users AS u ON o.client_id = u.id
-        JOIN private.cars AS c ON c.driver_id = p_driver_id
-        JOIN private.users AS d ON d.id = p_driver_id
-        WHERE o.driver_id IS NULL AND
-              o.client_id != p_driver_id AND
-              o.status = 'searching_for_driver' AND
-              u.country = d.country AND
-              u.city = d.city AND
-              o.order_class = c.car_class
-        ORDER BY o.created_at;
+        SELECT o.* FROM admin.orders_view AS o
+        LEFT JOIN admin.cars_view AS c ON c.driver_id = p_driver_id
+        WHERE o.status = 'searching_for_driver' AND
+        o.driver_id IS NULL AND
+        c.car_class = o.order_class AND
+        o.client_id != p_driver_id
+        ORDER BY o.created_at ASC;
 END;
 $$ LANGUAGE plpgsql;
+
+SELECT * FROM workers.get_acceptable_orders(20);
 
 CREATE OR REPLACE PROCEDURE workers.accept_order(
     p_driver_id BIGINT,
@@ -64,11 +59,25 @@ CREATE OR REPLACE PROCEDURE workers.submit_arriving_time(
 DECLARE
     current_order admin.orders_view%ROWTYPE;
 BEGIN
-    current_order := workers.get_current_order(p_driver_id);
+    SELECT * INTO current_order FROM workers.get_current_order(p_driver_id);
     IF current_order.id IS NULL THEN
         RAISE EXCEPTION 'You have no active order';
     END IF;
     UPDATE private.orders SET status = 'waiting_for_client' WHERE id = current_order.id;
+END;
+$$ LANGUAGE plpgsql;
+
+CREATE OR REPLACE PROCEDURE workers.submit_start_ride(
+    p_driver_id BIGINT
+) SECURITY DEFINER AS $$
+DECLARE
+    current_order admin.orders_view%ROWTYPE;
+BEGIN
+    SELECT * INTO current_order FROM workers.get_current_order(p_driver_id);
+    IF current_order.id IS NULL THEN
+        RAISE EXCEPTION 'You have no active order';
+    END IF;
+    UPDATE private.orders SET status = 'in_progress' WHERE id = current_order.id;
 END;
 $$ LANGUAGE plpgsql;
 
@@ -81,7 +90,7 @@ DECLARE
     current_order admin.orders_view%ROWTYPE;
     tag public.client_cancel_tags;
 BEGIN
-    current_order := workers.get_current_order(p_driver_id);
+    SELECT * INTO current_order FROM workers.get_current_order(p_driver_id);
     IF (current_order.id IS NULL) THEN
         RAISE EXCEPTION 'You have no active order';
     END IF;
@@ -110,11 +119,11 @@ DECLARE
     is_waiting_for_mark BOOLEAN;
     tag public.client_tags;
 BEGIN
-    current_order := workers.get_current_order(p_driver_id);
+    SELECT * INTO current_order FROM workers.get_current_order(p_driver_id);
     IF (current_order.id IS NULL) THEN
         RAISE EXCEPTION 'You have not active orders to mark';
     END IF;
-    is_waiting_for_mark := current_order.status = 'waiting_for_mark';
+    is_waiting_for_mark := current_order.status = 'waiting_for_marks';
     IF (NOT is_waiting_for_mark) THEN
         RAISE EXCEPTION 'You cant mark this order for now';
     END IF;
@@ -137,11 +146,11 @@ CREATE OR REPLACE PROCEDURE workers.complete_order(
 DECLARE
     current_order admin.orders_view%ROWTYPE;
 BEGIN
-    current_order := workers.get_current_order(p_driver_id);
+    SELECT * INTO current_order FROM workers.get_current_order(p_driver_id);
     IF (current_order.id IS NULL) THEN
         RAISE EXCEPTION 'You have no active order';
     END IF;
-    UPDATE private.orders SET status = 'waiting_for_mark' WHERE id = current_order.id;
+    UPDATE private.orders SET status = 'waiting_for_marks' WHERE id = current_order.id;
 END;
 $$ LANGUAGE plpgsql;
 
@@ -162,7 +171,7 @@ CREATE OR REPLACE FUNCTION workers.get_own_stats(
 DECLARE
     result admin.drivers_view;
 BEGIN
-    result := (SELECT * FROM admin.drivers_view WHERE id = p_driver_id);
+    SELECT * INTO result FROM admin.drivers_view WHERE id = p_driver_id;
     RETURN result;
 END;
 $$ LANGUAGE plpgsql;

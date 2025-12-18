@@ -63,11 +63,11 @@ DECLARE
     is_waiting_for_mark BOOLEAN;
     tag public.driver_tags;
 BEGIN
-    current_order := (SELECT * FROM authorized.get_current_order(p_client_id));
+    SELECT * INTO current_order FROM authorized.get_current_order(p_client_id);
     IF (current_order.id IS NULL) THEN
         RAISE EXCEPTION 'You have not active orders to mark';
     END IF;
-    is_waiting_for_mark := current_order.status = 'waiting_for_mark';
+    is_waiting_for_mark := current_order.status = 'waiting_for_marks';
     IF (NOT is_waiting_for_mark) THEN
         RAISE EXCEPTION 'You cant mark this order for now';
     END IF;

@@ -46,6 +46,13 @@ async def submit_arrive(
 ) -> JSONResponse:
     return WorkersController.submit_arrive(req, current_user=current_user)
 
+@router.post('/submit_start')
+async def submit_start(
+        req: Request,
+        current_user: TokenDataSchema = Depends(require_roles('driver'))
+) -> JSONResponse:
+    return WorkersController.submit_start(req, current_user=current_user)
+
 @router.get('/acceptable_orders')
 async def acceptable_orders(
         req: Request,

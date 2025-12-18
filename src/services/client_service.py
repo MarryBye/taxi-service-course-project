@@ -8,11 +8,13 @@ class ClientService:
     def cancel_current_order(schema: CancelOrderSchema, user: TokenDataSchema = None):
         db = Database(user=user)
 
-        query = "CALL authorized.cancel_current_order(%s, %s, %s)"
+        query = "CALL authorized.cancel_current_order(%s, %s, %s::public.driver_cancel_tags[])"
         params = [
             user.id,
             schema.comment,
-            schema.driver_tags
+            [
+                tag for tag in schema.driver_tags
+            ]
         ]
 
         return db.execute(query, params=params, fetch_count=0)
@@ -50,13 +52,22 @@ class ClientService:
     def make_order(schema: MakeOrderSchema, user: TokenDataSchema = None):
         db = Database(user=user)
 
-        query = "CALL authorized.make_order(%s, %s, %s, %s, %s)"
+        query = "CALL authorized.make_order(%s, %s, %s, %s, %s::public.address[])"
         params = [
             user.id,
             schema.order_class,
             schema.payment_method,
             schema.amount,
-            schema.address
+            [
+                (
+                    address.country_name,
+                    address.city_name,
+                    address.street_name,
+                    address.house_number,
+                    address.latitude,
+                    address.longitude
+                ) for address in schema.addresses
+            ]
         ]
 
         return db.execute(query, params=params, fetch_count=0)
@@ -65,12 +76,14 @@ class ClientService:
     def rate_order_by_client(schema: RateOrderSchema, user: TokenDataSchema = None):
         db = Database(user=user)
 
-        query = "CALL authorized.rate_order_by_client(%s, %s, %s, %s)"
+        query = "CALL authorized.rate_order_by_client(%s, %s, %s, %s::public.driver_tags[])"
         params = [
             user.id,
             schema.mark,
             schema.comment,
-            schema.driver_tags
+            [
+                tag for tag in schema.driver_tags
+            ]
         ]
 
         return db.execute(query, params=params, fetch_count=0)

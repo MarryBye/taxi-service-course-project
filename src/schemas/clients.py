@@ -1,7 +1,7 @@
 from pydantic import BaseModel, Field
 from typing import Optional
 from datetime import datetime
-from src.enums.db import DriverCancelTag, CarClass, PaymentMethod, ClientTag, CountryName, CityName
+from src.enums.db import DriverCancelTag, CarClass, PaymentMethod, ClientTag, CountryName, CityName, DriverTag
 from src.schemas.common import AddressSchema
 from src.schemas.mixins.hashable_password import WithHashablePassword
 from src.schemas.users import UserSchema
@@ -19,7 +19,7 @@ class MakeOrderSchema(BaseModel):
 class RateOrderSchema(BaseModel):
     mark: int = Field(..., alias="mark", description="Order rating mark")
     comment: Optional[str] = Field(None, alias="comment", description="Order rating comment")
-    driver_tags: list[DriverCancelTag] = Field(..., alias="driver_tags", description="Driver tags")
+    driver_tags: list[DriverTag] = Field(..., alias="driver_tags", description="Driver tags")
 
 class UpdateProfileSchema(BaseModel, WithHashablePassword):
     email: Optional[str] = Field(None, alias="email", description="Email address of the user", max_length=128)

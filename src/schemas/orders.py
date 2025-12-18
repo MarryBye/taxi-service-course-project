@@ -9,7 +9,7 @@ from src.schemas.users import *
 class BaseOrderSchema(BaseModel):
     client_id: int = Field(..., alias="client_id", description="Client ID")
     driver_id: Optional[int] = Field(None, alias="driver_id", description="Driver ID")
-    transaction_id: Optional[str] = Field(None, alias="transaction_id", description="Transaction ID")
+    transaction_id: Optional[int] = Field(None, alias="transaction_id", description="Transaction ID")
     status: OrderStatus = Field(..., alias="status", description="Order status")
     order_class: CarClass = Field(..., alias="order_class", description="Order class")
 

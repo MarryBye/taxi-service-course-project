@@ -10,7 +10,9 @@ class WorkersController:
 
     @staticmethod
     def acceptable_orders(req: Request, current_user: TokenDataSchema) -> list[OrderSchema]:
+        print(current_user)
         result = WorkersService.get_acceptable_orders(user=current_user)
+        print(result)
 
         if isinstance(result, Exception):
             raise HTTPException(400, str(result))
@@ -43,6 +45,15 @@ class WorkersController:
             raise HTTPException(400, str(result))
 
         return JSONResponse({"detail": "Arrival submitted"}, status_code=200)
+
+    @staticmethod
+    def submit_start(req: Request, current_user: TokenDataSchema) -> JSONResponse:
+        result = WorkersService.submit_start_ride(user=current_user)
+
+        if isinstance(result, Exception):
+            raise HTTPException(400, str(result))
+
+        return JSONResponse({"detail": "Ride started"}, status_code=200)
 
     @staticmethod
     def complete_order(req: Request, current_user: TokenDataSchema) -> JSONResponse:

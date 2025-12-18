@@ -4,7 +4,6 @@ import psycopg2.errors as sql_err
 
 from config import ( DB_USER, DB_PASSWORD, DB_HOST, DB_PORT, DB_NAME )
 from src.schemas.token import TokenDataSchema
-from src.utils.crypto import CryptoUtil
 
 class Database:
     def __init__(self, user: TokenDataSchema | None = None):
@@ -16,6 +15,12 @@ class Database:
         print(f"[DATABASE]: Connecting to database {DB_NAME} ({DB_USER}:{DB_PASSWORD})")
         self.__connection = sql.connect(user=DB_USER, password=DB_PASSWORD, host=DB_HOST, port=DB_PORT, database=DB_NAME)
         self.__cursor = self.__connection.cursor(cursor_factory=sql_ext.RealDictCursor)
+
+        sql_ext.register_composite(
+            'public.address',
+            self.__connection,
+            globally=True
+        )
 
     def disconnect(self):
         self.__cursor.close()
@@ -36,6 +41,7 @@ class Database:
                 case -1: result = self.__cursor.fetchall()
                 case _: result = self.__cursor.fetchmany(fetch_count)
         except Exception as e:
+            print(f"[DATABASE]: {e}")
             result = e
             self.__connection.rollback()
         finally:
