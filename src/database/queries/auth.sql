@@ -74,5 +74,17 @@ BEGIN
 END;
 $$ LANGUAGE plpgsql;
 
+CREATE OR REPLACE FUNCTION public.get_current_user_from_session() RETURNS BIGINT SECURITY DEFINER AS $$
+DECLARE
+    user_id BIGINT;
+BEGIN
+    user_id := (SELECT users.id FROM private.users AS users WHERE users.login = SESSION_USER);
+    IF user_id IS NULL THEN
+        RAISE EXCEPTION 'User not found';
+    END IF;
+    RETURN user_id;
+END;
+$$ LANGUAGE plpgsql;
+
 SELECT * FROM register('MarryBye', 'Ukraine555U', 'Viktor', 'Lukianov', 'vlukianov04@gmail.com', '+380660734348', 1, 1);
 SELECT * FROM authenticate('MarryBye', 'Ukraine555U');

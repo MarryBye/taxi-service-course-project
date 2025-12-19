@@ -1,15 +1,3 @@
-CREATE OR REPLACE FUNCTION public.get_current_user_from_session() RETURNS BIGINT SECURITY DEFINER AS $$
-DECLARE
-    user_id BIGINT;
-BEGIN
-    user_id := (SELECT users.id FROM private.users AS users WHERE users.login = SESSION_USER);
-    IF user_id IS NULL THEN
-        RAISE EXCEPTION 'User not found';
-    END IF;
-    RETURN user_id;
-END;
-$$ LANGUAGE plpgsql;
-
 CREATE OR REPLACE FUNCTION authorized.get_profile()
 RETURNS SETOF admin.users_view SECURITY DEFINER AS $$
 DECLARE
@@ -96,7 +84,7 @@ BEGIN
         real_address := (SELECT EXISTS(
             SELECT 1 FROM private.cities AS cities
             JOIN private.countries AS countries ON cities.country_id = countries.id
-            WHERE cities.name = ad.city AND countries.name = ad.country
+            WHERE cities.name = ad.city AND countries.full_name = ad.country
         ));
         IF NOT real_address THEN
             RAISE EXCEPTION 'Invalid address';
@@ -136,7 +124,7 @@ BEGIN
     END IF;
 
     RETURN QUERY
-        SELECT * FROM admin.orders_view AS orders WHERE orders.client->'id' = user_id;
+        SELECT * FROM admin.orders_view AS orders WHERE (orders.client->>'id')::BIGINT = user_id;
 END;
 $$ LANGUAGE plpgsql;
 
@@ -151,7 +139,7 @@ BEGIN
 
     RETURN QUERY
         SELECT * FROM admin.orders_view AS orders
-        WHERE orders.client->'id' = user_id AND NOT orders.status IN ('completed', 'cancelled');
+        WHERE (orders.client->>'id')::BIGINT = user_id AND NOT orders.status IN ('completed', 'canceled');
 END;
 $$ LANGUAGE plpgsql;
 
