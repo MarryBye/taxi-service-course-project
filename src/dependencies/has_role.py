@@ -1,6 +1,6 @@
 from fastapi import Depends, HTTPException, status
 from typing import Optional
-from src.schemas.token import TokenDataSchema
+from src.schemas.auth import TokenDataSchema
 from src.dependencies.require_auth import require_auth
 
 def require_roles(*allowed_roles: str):

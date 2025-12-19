@@ -3,7 +3,7 @@ from fastapi.responses import JSONResponse
 from src.services.auth_service import AuthService
 from src.schemas.auth import RegisterSchema, LoginSchema, TokenSchema, TokenDataSchema
 from src.schemas.views import UsersView
-from src.dependencies.get_current_user import get_current_user
+from src.dependencies.require_auth import require_auth
 from src.controllers.database import DatabaseController
 from src.utils.crypto import CryptoUtil
 
@@ -48,7 +48,7 @@ async def register(data: RegisterSchema) -> UsersView:
     return result
 
 @router.post('/logout')
-async def logout(current_user: TokenDataSchema = Depends(get_current_user)) -> JSONResponse:
+async def logout(current_user: TokenDataSchema = Depends(require_auth)) -> JSONResponse:
     result = AuthService.logout(current_user)
 
     if isinstance(result, Exception):

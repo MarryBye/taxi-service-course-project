@@ -274,3 +274,13 @@ SELECT
     maintenances.changed_at
 FROM private.maintenances AS maintenances
 JOIN private.cars AS cars ON cars.id = maintenances.car_id;
+
+CREATE OR REPLACE VIEW admin.transactions_view AS
+SELECT
+    transactions.id,
+    transactions.balance_type,
+    transactions.transaction_type,
+    transactions.payment_method,
+    transactions.amount,
+    transactions.created_at
+FROM private.transactions AS transactions;

@@ -1,6 +1,6 @@
 from fastapi import Depends, HTTPException, status
 from typing import Optional
-from src.schemas.token import TokenDataSchema
+from src.schemas.auth import TokenDataSchema
 from src.dependencies.get_current_user import get_current_user
 
 def require_auth(
