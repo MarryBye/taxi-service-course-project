@@ -41,6 +41,7 @@ BEGIN
     ) RETURNING id INTO created_user_id;
 
     CALL admin.create_psql_user(p_login, p_password);
+    CALL admin.set_psql_user_role(p_login, 'client');
 
     RETURN QUERY
         SELECT * FROM admin.users_view AS users WHERE users.id = created_user_id;

@@ -15,7 +15,7 @@ BEGIN
     IF p_login = 'postgres' THEN
         RAISE EXCEPTION 'You cannot change role for postgres user';
     END IF;
-    EXECUTE FORMAT('REVOKE guest, client, driver, admin FROM %I;', p_login);
+    EXECUTE FORMAT('REVOKE client, driver, admin FROM %I;', p_login);
     EXECUTE FORMAT('GRANT %I TO %I;', p_role, p_login);
 END;
 $$ LANGUAGE plpgsql;
@@ -42,3 +42,5 @@ BEGIN
     EXECUTE FORMAT('DROP USER %I;', p_login);
 END;
 $$ LANGUAGE plpgsql;
+
+-----------------------------------------------------------------------------------

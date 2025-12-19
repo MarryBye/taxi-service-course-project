@@ -25,6 +25,10 @@ def make_order(user: TokenDataSchema = Depends(require_auth)):
 def orders_history(user: TokenDataSchema = Depends(require_auth)):
     pass
 
+@router.get('/orders/{order_id}')
+def order_info(order_id: int, user: TokenDataSchema = Depends(require_auth)):
+    pass
+
 @router.get('/orders/current')
 def current_order(user: TokenDataSchema = Depends(require_auth)):
     pass

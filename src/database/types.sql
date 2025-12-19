@@ -122,8 +122,8 @@ CREATE TYPE public.colors AS ENUM (
 );
 
 CREATE TYPE public.address AS (
-	country_id VARCHAR(32),
-	city_id VARCHAR(32),
+	country VARCHAR(32),
+	city VARCHAR(32),
 	street VARCHAR(32),
 	house VARCHAR(9)
 );
