@@ -1,51 +1,62 @@
 import psycopg2 as sql
 import psycopg2.extras as sql_ext
-import psycopg2.errors as sql_err
 
 from config import ( DB_USER, DB_PASSWORD, DB_HOST, DB_PORT, DB_NAME )
-from src.schemas.token import TokenDataSchema
 
-class Database:
-    def __init__(self, user: TokenDataSchema | None = None):
-        self.__user = user
-        self.__connection: None | sql.extensions.connection = None
-        self.__cursor: None | sql.extensions.cursor = None
-        
-    def connect(self):
-        print(f"[DATABASE]: Connecting to database {DB_NAME} ({DB_USER}:{DB_PASSWORD})")
-        self.__connection = sql.connect(user=DB_USER, password=DB_PASSWORD, host=DB_HOST, port=DB_PORT, database=DB_NAME)
-        self.__cursor = self.__connection.cursor(cursor_factory=sql_ext.RealDictCursor)
+class DatabaseController:
+    _instance = None
+    connections: dict[str, tuple] = {}
 
-        sql_ext.register_composite(
-            'public.address',
-            self.__connection,
-            globally=True
-        )
+    def __new__(cls):
+        print("[DATABASE] Creating new instance")
+        if cls._instance is None:
+            cls._instance = super().__new__(cls)
+            cls._instance.connections = {}
+        print(cls._instance.connections)
+        return cls._instance
 
-    def disconnect(self):
-        self.__cursor.close()
-        self.__connection.close()
+    def connect(self, username: str = None, password: str = None):
+        if username is None or password is None:
+            username, password = DB_USER, DB_PASSWORD
 
-    def execute(self, query: str, params=None, fetch_count: int = 1) -> Exception | dict:
-        params = params if params else []
+        print(f"[DATABASE] Connecting to database as {username}")
+        conn = sql.connect(host=DB_HOST, port=DB_PORT, database=DB_NAME, user=username, password=password)
+        cursor = conn.cursor(cursor_factory=sql_ext.RealDictCursor)
+
+        self.connections[username] = (conn, cursor)
+
+    def disconnect(self, username: str):
+        conn, cursor = self.connections[username]
+        cursor.close()
+        conn.close()
+        del self.connections[username]
+
+    def execute(self, query: str, params: list = None, fetch_count: int = -1, executor_username: str = None) -> Exception | dict:
         result = None
 
-        self.connect()
+        if executor_username is None:
+            executor_username = DB_USER
+
+        if executor_username not in self.connections:
+            raise Exception(f"No active connection for {executor_username}")
+
+        print(f"[DATABASE] Executing query as {executor_username}")
+        conn, cur = self.connections[executor_username]
 
         try:
-            self.__cursor.execute("SET ROLE %s", [self.__user.role if self.__user else 'guest'])
-            self.__cursor.execute(query, params)
+            cur.execute(query, params)
+
             match fetch_count:
-                case 1: result = self.__cursor.fetchone()
+                case 1: result = cur.fetchone()
                 case 0: result = None
-                case -1: result = self.__cursor.fetchall()
-                case _: result = self.__cursor.fetchmany(fetch_count)
+                case -1: result = cur.fetchall()
+                case _: result = cur.fetchmany(fetch_count)
+
+            conn.commit()
+
         except Exception as e:
-            print(f"[DATABASE]: {e}")
             result = e
-            self.__connection.rollback()
+            conn.rollback()
+
         finally:
-            self.__cursor.execute("RESET ROLE")
-            self.__connection.commit()
-            self.disconnect()
-        return result
+            return result

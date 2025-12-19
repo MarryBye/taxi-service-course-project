@@ -1,13 +1,26 @@
+CREATE TABLE IF NOT EXISTS private.countries (
+    id BIGINT GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
+    code VARCHAR(2) NOT NULL UNIQUE,
+    full_name VARCHAR(32) NOT NULL UNIQUE
+);
+
+CREATE TABLE IF NOT EXISTS private.cities (
+    id BIGINT GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
+    country_id BIGINT NOT NULL REFERENCES private.countries(id),
+    name VARCHAR(32) NOT NULL UNIQUE,
+    UNIQUE(country_id, name)
+);
+
 CREATE TABLE IF NOT EXISTS private.users (
     id BIGINT GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
     login VARCHAR(32) NOT NULL UNIQUE,
-    email VARCHAR(128) NOT NULL UNIQUE CHECK (public.check_email(email)),
-    tel_number VARCHAR(32) NOT NULL UNIQUE CHECK (public.check_tel(tel_number)),
     password_hash VARCHAR(512) NOT NULL,
     first_name VARCHAR(32) NOT NULL,
     last_name VARCHAR(32) NOT NULL,
-    country public.country_names NOT NULL,
-    city public.city_names NOT NULL,
+    email VARCHAR(128) NOT NULL UNIQUE CHECK (public.check_email(email)),
+    tel_number VARCHAR(32) NOT NULL UNIQUE CHECK (public.check_tel(tel_number)),
+    country_id BIGINT NOT NULL REFERENCES private.countries(id),
+    city_id BIGINT NOT NULL REFERENCES private.cities(id),
     role public.user_roles NOT NULL DEFAULT 'client',
 
     created_at TIMESTAMP NOT NULL DEFAULT NOW(),
@@ -19,10 +32,10 @@ CREATE TABLE IF NOT EXISTS private.cars (
     driver_id BIGINT UNIQUE REFERENCES private.users(id) ON DELETE SET NULL,
 	mark VARCHAR(32) NOT NULL,
 	model VARCHAR(32) NOT NULL,
-	car_number VARCHAR(32) UNIQUE NOT NULL CHECK (public.check_car_number(car_number)),
-    country public.country_names NOT NULL,
-    city public.city_names NOT NULL,
-    color VARCHAR(32) NOT NULL,
+	number_plate VARCHAR(32) UNIQUE NOT NULL CHECK (public.check_car_number(number_plate)),
+    country_id BIGINT NOT NULL REFERENCES private.countries(id),
+    city_id BIGINT NOT NULL REFERENCES private.cities(id),
+    color public.colors NOT NULL,
 	car_class public.car_classes NOT NULL DEFAULT 'standard',
     car_status public.car_statuses NOT NULL DEFAULT 'available',
 
@@ -99,12 +112,11 @@ CREATE TABLE IF NOT EXISTS private.order_driver_tags (
 CREATE TABLE IF NOT EXISTS private.balances (
     id BIGINT GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
     user_id BIGINT NOT NULL REFERENCES private.users(id) ON DELETE CASCADE,
-    balance NUMERIC NOT NULL DEFAULT 0,
-    balance_type public.balance_types NOT NULL,
+    payment NUMERIC NOT NULL DEFAULT 0 CHECK (payment >= 0),
+    earning NUMERIC NOT NULL DEFAULT 0 CHECK (earning >= 0),
 
     created_at TIMESTAMP NOT NULL DEFAULT NOW(),
-    changed_at TIMESTAMP NOT NULL DEFAULT NOW(),
-    UNIQUE(user_id, balance_type)
+    changed_at TIMESTAMP NOT NULL DEFAULT NOW()
 );
 
 CREATE TABLE IF NOT EXISTS private.routes (

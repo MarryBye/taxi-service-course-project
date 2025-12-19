@@ -1,13 +1,13 @@
-from fastapi import Header
+from fastapi import Header, HTTPException
 from typing import Optional
-from src.schemas.token import TokenDataSchema
+from src.schemas.auth import TokenDataSchema
 from src.utils.crypto import CryptoUtil
 
 def get_current_user(
         token: Optional[str] = Header(None)
 ) -> Optional[TokenDataSchema]:
     if not token:
-        return None
+        raise HTTPException(status_code=401, detail="Not authenticated")
     try:
         payload = CryptoUtil.verify_access_token(token)
         return TokenDataSchema(
@@ -16,4 +16,4 @@ def get_current_user(
             role=payload.role
         )
     except Exception as e:
-        return None
+        raise HTTPException(status_code=401, detail=str(e))

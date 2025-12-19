@@ -51,21 +51,19 @@ CREATE TYPE public.user_roles AS ENUM (
     'guest'
 );
 
-CREATE TYPE public.city_names AS ENUM (
-    'Kyiv',
-    'Lviv',
-    'Odessa',
-    'Dnipro',
-    'Kharkiv'
-);
-
 CREATE TYPE public.client_tags AS ENUM (
     'accurate',
     'friendly',
     'respectful',
     'communicative',
-    'polite'
+    'polite',
+    'on_time',
+    'clear_instructions',
+    'calm',
+    'helpful',
+    'other'
 );
+
 
 CREATE TYPE public.driver_tags AS ENUM (
     'accurate',
@@ -75,30 +73,57 @@ CREATE TYPE public.driver_tags AS ENUM (
     'modern_car',
     'polite',
     'communicative',
-    'helpful'
+    'helpful',
+    'smooth_driving',
+    'safe_driving',
+    'good_navigation',
+    'other'
 );
+
 
 CREATE TYPE public.driver_cancel_tags AS ENUM (
-    'reason 1',
-    'reason 2',
-    'reason 3'
+    'client_not_responding',
+    'client_not_at_pickup_point',
+    'vehicle_breakdown',
+    'traffic_accident',
+    'unsafe_pickup_location',
+    'route_unreachable',
+    'emergency',
+    'other'
 );
+
 
 CREATE TYPE public.client_cancel_tags AS ENUM (
-    'reason 1',
-    'reason 2',
-    'reason 3'
+    'driver_too_far',
+    'long_wait_time',
+    'changed_plans',
+    'wrong_pickup_location',
+    'found_another_transport',
+    'driver_not_responding',
+    'price_too_high',
+    'emergency',
+    'other'
 );
 
-CREATE TYPE public.country_names AS ENUM (
-    'Ukraine'
+CREATE TYPE public.colors AS ENUM (
+    'red',
+    'blue',
+    'green',
+    'black',
+    'white',
+    'yellow',
+    'orange',
+    'purple',
+    'brown',
+    'pink',
+    'gray',
+    'silver',
+    'gold'
 );
 
 CREATE TYPE public.address AS (
-	country_name country_names,
-	city_name city_names,
-	street_name VARCHAR(32),
-	house_number VARCHAR(9),
-	latitude DOUBLE PRECISION,
-	longitude DOUBLE PRECISION 
+	country_id VARCHAR(32),
+	city_id VARCHAR(32),
+	street VARCHAR(32),
+	house VARCHAR(9)
 );

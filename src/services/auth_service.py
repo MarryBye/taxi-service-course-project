@@ -1,32 +1,42 @@
-from src.controllers.database import Database
-from src.schemas.auth import AuthUserSchema, RegisterUserSchema
-from src.schemas.token import TokenDataSchema
+from src.controllers.database import DatabaseController
+from src.schemas.auth import LoginSchema, RegisterSchema, TokenDataSchema, AuthenticateResponse
+from src.schemas.views import UsersView
 
 
 class AuthService:
     @staticmethod
-    def auth(data: AuthUserSchema, user: TokenDataSchema = None) -> Exception | dict:
-        db = Database(user=user)
+    def authenticate(data: LoginSchema) -> Exception | AuthenticateResponse:
+        db = DatabaseController()
+        db.connect()
 
-        query = "SELECT * FROM auth(%s)"
-        params = [data.login]
+        query = "SELECT * FROM authenticate(%s, %s)"
+        params = [data.login, data.password]
 
         return db.execute(query, params=params, fetch_count=1)
 
     @staticmethod
-    def register(schema: RegisterUserSchema, user: TokenDataSchema = None) -> Exception | dict:
-        db = Database(user=user)
+    def register(data: RegisterSchema) -> Exception | UsersView:
+        db = DatabaseController()
+        db.connect()
 
-        query = "CALL register(%s, %s, %s, %s, %s, %s, %s, %s)"
+        query = "SELECT * FROM register(%s, %s, %s, %s, %s, %s, %s, %s)"
         params = [
-            schema.login,
-            schema.email,
-            schema.tel_number,
-            schema.password,
-            schema.first_name,
-            schema.last_name,
-            schema.country_name,
-            schema.city_name
+            data.login,
+            data.password,
+            data.first_name,
+            data.last_name,
+            data.email,
+            data.tel_number,
+            data.country_id,
+            data.city_id
         ]
 
-        return db.execute(query, params=params, fetch_count=0)
+        return db.execute(query, params=params, fetch_count=1)
+
+    @staticmethod
+    def logout(user: TokenDataSchema = None) -> Exception | None:
+        db = DatabaseController()
+        try:
+            db.disconnect(username=user.login)
+        except Exception as e:
+            return e

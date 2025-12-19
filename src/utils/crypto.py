@@ -1,10 +1,7 @@
+from jose import JWTError, jwt
 from datetime import datetime, timedelta
-from jose import jwt, JWTError
-from passlib.context import CryptContext
 from config import JWT_SECRET_KEY, JWT_ALGORITHM, JWT_TOKEN_LIFETIME
-from src.schemas.token import TokenDataSchema
-
-pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
+from src.schemas.auth import TokenDataSchema
 
 class CryptoUtil:
     @staticmethod
@@ -18,18 +15,7 @@ class CryptoUtil:
     @staticmethod
     def verify_access_token(token: str) -> TokenDataSchema | None:
         try:
-            payload = TokenDataSchema(**jwt.decode(token, JWT_SECRET_KEY, algorithms=[JWT_ALGORITHM]))
-            return payload
+            payload = jwt.decode(token, JWT_SECRET_KEY, algorithms=[JWT_ALGORITHM])
+            return TokenDataSchema(**payload)
         except JWTError:
             return None
-        
-    @staticmethod
-    def hash_password(password: str) -> str:
-        return pwd_context.hash(password)
-    
-    @staticmethod
-    def verify_password(plain_password: str, hashed_password: str) -> bool:
-        try:
-            return pwd_context.verify(plain_password, hashed_password)
-        except ValueError:
-            return False
