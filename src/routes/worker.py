@@ -1,50 +1,111 @@
 from fastapi import APIRouter, Depends, HTTPException
 from fastapi.responses import JSONResponse
-from src.services.auth_service import AuthService
-from src.schemas.auth import RegisterSchema, LoginSchema, TokenSchema, TokenDataSchema
-from src.schemas.views import UsersView
+
+from src.schemas.auth import TokenDataSchema
+from src.schemas.views import *
+from src.schemas.workers import *
+
 from src.dependencies.has_role import require_roles
-from src.controllers.database import DatabaseController
-from src.utils.crypto import CryptoUtil
+
+from src.services.worker import WorkersService
 
 router = APIRouter(prefix='/driver')
 
 @router.get('/orders')
-def orders_history(user: TokenDataSchema = Depends(require_roles('driver'))):
-    pass
+async def orders_history(user: TokenDataSchema = Depends(require_roles('driver'))) -> list[OrdersView]:
+    data = WorkersService.orders_history(user)
 
-@router.get('/orders/acceptable')
-def acceptable_orders(user: TokenDataSchema = Depends(require_roles('driver'))):
-    pass
+    if isinstance(data, Exception):
+        raise HTTPException(400, str(data))
 
-@router.post('/orders/new/accept')
-def accept_order(user: TokenDataSchema = Depends(require_roles('driver'))):
-    pass
-
-@router.post('/orders/current/cancel')
-def cancel_order(user: TokenDataSchema = Depends(require_roles('driver'))):
-    pass
+    return data
 
 @router.get('/orders/current')
-def current_order(user: TokenDataSchema = Depends(require_roles('driver'))):
-    pass
+async def current_order(user: TokenDataSchema = Depends(require_roles('driver'))) -> OrdersView:
+    data = WorkersService.current_order(user)
 
-@router.post('/orders/current/rate')
-def rate_order(user: TokenDataSchema = Depends(require_roles('driver'))):
-    pass
+    if isinstance(data, Exception):
+        raise HTTPException(400, str(data))
 
-@router.post('/orders/current/arrive')
-def submit_arrival(user: TokenDataSchema = Depends(require_roles('driver'))):
-    pass
+    return data
 
-@router.post('/orders/current/start')
-def submit_start(user: TokenDataSchema = Depends(require_roles('driver'))):
-    pass
+@router.get('/orders/acceptable')
+async def acceptable_orders(user: TokenDataSchema = Depends(require_roles('driver'))) -> list[OrdersView]:
+    data = WorkersService.acceptable_orders(user)
 
-@router.post('/orders/current/finish')
-def submit_finish(user: TokenDataSchema = Depends(require_roles('driver'))):
-    pass
+    if isinstance(data, Exception):
+        raise HTTPException(400, str(data))
+
+    return data
+
+@router.get('/orders/{order_id}')
+async def order_stat(order_id: int, user: TokenDataSchema = Depends(require_roles('driver'))) -> OrdersStatView:
+    data = WorkersService.order_stat(order_id, user)
+
+    if isinstance(data, Exception):
+        raise HTTPException(400, str(data))
+
+    return data
+
+@router.post('/orders/{order_id}/accept')
+async def accept_order(order_id: int, user: TokenDataSchema = Depends(require_roles('driver'))) -> OrdersView:
+    data = WorkersService.accept_order(order_id, user)
+
+    if isinstance(data, Exception):
+        raise HTTPException(400, str(data))
+
+    return data
+
+@router.post('/orders/{order_id}/rate')
+async def rate_order(order_id: int, data: RateOrderSchema, user: TokenDataSchema = Depends(require_roles('driver'))) -> OrdersStatView:
+    data = WorkersService.rate_order(order_id, data, user)
+
+    if isinstance(data, Exception):
+        raise HTTPException(400, str(data))
+
+    return data
+
+@router.post('/orders/{order_id}/cancel')
+async def cancel_order(order_id: int, data: CancelOrderSchema, user: TokenDataSchema = Depends(require_roles('driver'))) -> OrdersStatView:
+    data = WorkersService.cancel_order(order_id, data, user)
+
+    if isinstance(data, Exception):
+        raise HTTPException(400, str(data))
+
+    return data
+
+@router.post('/orders/{order_id}/arrive')
+async def submit_arrival(order_id: int, user: TokenDataSchema = Depends(require_roles('driver'))) -> OrdersView:
+    data = WorkersService.submit_arrival(order_id, user)
+
+    if isinstance(data, Exception):
+        raise HTTPException(400, str(data))
+
+    return data
+
+@router.post('/orders/{order_id}/start')
+async def submit_start(order_id: int, user: TokenDataSchema = Depends(require_roles('driver'))) -> OrdersView:
+    data = WorkersService.submit_start(order_id, user)
+
+    if isinstance(data, Exception):
+        raise HTTPException(400, str(data))
+
+    return data
+
+@router.post('/orders/{order_id}/finish')
+async def submit_finish(order_id: int, user: TokenDataSchema = Depends(require_roles('driver'))) -> OrdersView:
+    data = WorkersService.submit_start(order_id, user)
+
+    if isinstance(data, Exception):
+        raise HTTPException(400, str(data))
+
+    return data
 
 @router.get('/stats')
-def stats(user: TokenDataSchema = Depends(require_roles('driver'))):
-    pass
+async def stats(user: TokenDataSchema = Depends(require_roles('driver'))) -> DriversStatView:
+    data = WorkersService.stats(user)
+
+    if isinstance(data, Exception):
+        raise HTTPException(400, str(data))
+
+    return data

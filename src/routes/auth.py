@@ -1,6 +1,6 @@
 from fastapi import APIRouter, Depends, HTTPException
 from fastapi.responses import JSONResponse
-from src.services.auth_service import AuthService
+from src.services.auth import AuthService
 from src.schemas.auth import RegisterSchema, LoginSchema, TokenSchema, TokenDataSchema
 from src.schemas.views import UsersView
 from src.dependencies.require_auth import require_auth

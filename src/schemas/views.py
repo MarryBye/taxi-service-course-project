@@ -2,7 +2,7 @@ from pydantic import BaseModel, Field
 from datetime import datetime
 from typing import Optional
 from src.schemas.common import Country, City, Transaction, Route, Rating, Cancel
-from src.enums.db import UserRoles, ClientTags, ClientCancelTags, Colors, CarClasses, CarStatuses, DriverTags, DriverCancelTags, OrderStatuses
+from src.enums.db import UserRoles, ClientTags, ClientCancelTags, Colors, CarClasses, CarStatuses, DriverTags, DriverCancelTags, OrderStatuses, TransactionType, BalanceTypes, PaymentMethods
 
 class UsersView(BaseModel):
     id: int = Field(...)
@@ -86,3 +86,11 @@ class MaintenancesView(BaseModel):
     maintenance_end: datetime = Field(...)
     created_at: datetime = Field(...)
     changed_at: datetime = Field(...)
+
+class TransactionsView(BaseModel):
+    id: int = Field(...)
+    balance_type: BalanceTypes = Field(...)
+    transaction_type: TransactionType = Field(...)
+    payment_method: PaymentMethods = Field(...)
+    amount: int = Field(...)
+    created_at: datetime = Field(...)
