@@ -14,7 +14,6 @@ class AdminService:
                 p_mark := %s, 
                 p_model := %s, 
                 p_number_plate := %s, 
-                p_country_id := %s, 
                 p_city_id := %s, 
                 p_color := %s, 
                 p_car_class := %s,
@@ -26,7 +25,6 @@ class AdminService:
             data.mark,
             data.model,
             data.number_plate,
-            data.country_id,
             data.city_id,
             data.color,
             data.car_class,
@@ -98,7 +96,6 @@ class AdminService:
                 p_last_name := %s, 
                 p_email := %s, 
                 p_tel_number := %s, 
-                p_country_id := %s,
                 p_city_id := %s, 
                 p_role := %s
             )
@@ -110,7 +107,6 @@ class AdminService:
             data.last_name,
             data.email,
             data.tel_number,
-            data.country_id,
             data.city_id,
             data.role
         ]
@@ -273,7 +269,6 @@ class AdminService:
                     p_mark := %s, 
                     p_model := %s, 
                     p_number_plate := %s, 
-                    p_country_id := %s, 
                     p_city_id := %s, 
                     p_color := %s, 
                     p_car_class := %s, 
@@ -286,7 +281,6 @@ class AdminService:
             data.mark,
             data.model,
             data.number_plate,
-            data.country_id,
             data.city_id,
             data.color,
             data.car_class,
@@ -343,7 +337,6 @@ class AdminService:
                 p_last_name := %s, 
                 p_email := %s, 
                 p_tel_number := %s, 
-                p_country_id := %s, 
                 p_city_id := %s, 
                 p_password := %s, 
                 p_role := %s
@@ -355,7 +348,6 @@ class AdminService:
             data.last_name,
             data.email,
             data.tel_number,
-            data.country_id,
             data.city_id,
             data.password,
             data.role

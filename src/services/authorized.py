@@ -142,7 +142,6 @@ class AuthorizedService:
                 p_last_name := %s, 
                 p_email := %s, 
                 p_tel_number := %s, 
-                p_country_id := %s, 
                 p_city_id := %s, 
                 p_password := %s
             )
@@ -152,7 +151,6 @@ class AuthorizedService:
             data.last_name,
             data.email,
             data.tel_number,
-            data.country_id,
             data.city_id,
             data.password
         ]

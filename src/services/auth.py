@@ -19,7 +19,7 @@ class AuthService:
         db = DatabaseController()
         db.connect()
 
-        query = "SELECT * FROM register(%s, %s, %s, %s, %s, %s, %s, %s)"
+        query = "SELECT * FROM register(%s, %s, %s, %s, %s, %s, %s)"
         params = [
             data.login,
             data.password,
@@ -27,7 +27,6 @@ class AuthService:
             data.last_name,
             data.email,
             data.tel_number,
-            data.country_id,
             data.city_id
         ]
 
