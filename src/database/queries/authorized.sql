@@ -16,7 +16,6 @@ CREATE OR REPLACE FUNCTION authorized.update_profile(
     p_last_name VARCHAR(32) DEFAULT NULL,
     p_email VARCHAR(64) DEFAULT NULL,
     p_tel_number VARCHAR(16) DEFAULT NULL,
-    p_country_id BIGINT DEFAULT NULL,
     p_city_id BIGINT DEFAULT NULL,
     p_password VARCHAR(64) DEFAULT NULL
 ) RETURNS SETOF admin.users_view SECURITY DEFINER AS $$
@@ -37,7 +36,6 @@ BEGIN
         last_name    = COALESCE(p_last_name,  users.last_name),
         email        = COALESCE(p_email,      users.email),
         tel_number   = COALESCE(p_tel_number, users.tel_number),
-        country_id   = COALESCE(p_country_id, users.country_id),
         city_id      = COALESCE(p_city_id,    users.city_id),
         password_hash = CASE
             WHEN p_password IS NULL THEN users.password_hash

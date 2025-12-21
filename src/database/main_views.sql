@@ -8,15 +8,12 @@ SELECT
 
     (
         json_build_object(
-            'id', countries.id,
-            'code', countries.code,
-            'full_name', countries.full_name
-        )
-    ) AS country,
-
-    (
-        json_build_object(
             'id', cities.id,
+            'country', json_build_object(
+                'id', countries.id,
+                'code', countries.code,
+                'full_name', countries.full_name
+            ),
             'name', cities.name
         )
     ) AS city,
@@ -29,8 +26,8 @@ SELECT
     users.created_at,
     users.changed_at
 FROM private.users AS users
-JOIN private.countries AS countries ON users.country_id = countries.id
 JOIN private.cities AS cities ON users.city_id = cities.id
+JOIN private.countries AS countries ON cities.country_id = countries.id
 JOIN private.balances AS balances ON balances.user_id = users.id;
 
 CREATE OR REPLACE VIEW admin.clients_stat_view AS
@@ -112,14 +109,12 @@ SELECT
     cars.number_plate,
     (
         json_build_object(
-            'id', countries.id,
-            'code', countries.code,
-            'full_name', countries.full_name
-        )
-    ) AS country,
-    (
-        json_build_object(
             'id', cities.id,
+            'country', json_build_object(
+                'id', countries.id,
+                'code', countries.code,
+                'full_name', countries.full_name
+            ),
             'name', cities.name
         )
     ) AS city,
@@ -143,7 +138,7 @@ SELECT
             'last_name', users.last_name,
             'email', users.email,
             'tel_number', users.tel_number,
-            'country', users.country,
+            'city', users.city,
             'city', users.city,
             'role', users.role,
             'payment_balance', users.payment_balance,
@@ -162,7 +157,6 @@ SELECT
                 'last_name', drivers.last_name,
                 'email', drivers.email,
                 'tel_number', drivers.tel_number,
-                'country', drivers.country,
                 'city', drivers.city,
                 'role', drivers.role,
                 'payment_balance', drivers.payment_balance,

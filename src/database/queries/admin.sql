@@ -52,7 +52,6 @@ CREATE OR REPLACE FUNCTION admin.create_user(
     p_last_name VARCHAR(32),
     p_email VARCHAR(64),
     p_tel_number VARCHAR(32),
-    p_country_id BIGINT,
     p_city_id BIGINT,
     p_role public.user_roles
 ) RETURNS SETOF admin.users_view SECURITY DEFINER AS $$
@@ -73,7 +72,6 @@ BEGIN
          last_name,
          email,
          tel_number,
-         country_id,
          city_id,
          role
     )
@@ -84,7 +82,6 @@ BEGIN
         p_last_name,
         p_email,
         p_tel_number,
-        p_country_id,
         p_city_id,
         p_role
     ) RETURNING id INTO created_user_id;
@@ -132,7 +129,6 @@ CREATE OR REPLACE FUNCTION admin.update_user(
     p_last_name VARCHAR(32) DEFAULT NULL,
     p_email VARCHAR(64) DEFAULT NULL,
     p_tel_number VARCHAR(16) DEFAULT NULL,
-    p_country_id BIGINT DEFAULT NULL,
     p_city_id BIGINT DEFAULT NULL,
     p_password VARCHAR(64) DEFAULT NULL,
     p_role public.user_roles DEFAULT NULL
@@ -152,7 +148,6 @@ BEGIN
         last_name    = COALESCE(p_last_name,  users.last_name),
         email        = COALESCE(p_email,      users.email),
         tel_number   = COALESCE(p_tel_number, users.tel_number),
-        country_id   = COALESCE(p_country_id, users.country_id),
         city_id      = COALESCE(p_city_id,    users.city_id),
         role         = COALESCE(p_role,         users.role),
         password_hash = CASE
@@ -192,7 +187,6 @@ CREATE OR REPLACE FUNCTION admin.create_car(
     p_mark VARCHAR(32),
     p_model VARCHAR(32),
     p_number_plate VARCHAR(32),
-    p_country_id BIGINT,
     p_city_id BIGINT,
     p_color public.colors,
     p_car_class public.car_classes,
@@ -203,8 +197,8 @@ DECLARE
     created_car_id BIGINT;
 BEGIN
 
-    INSERT INTO private.cars (mark, model, number_plate, country_id, city_id, color, car_class, car_status, driver_id)
-    VALUES (p_mark, p_model, p_number_plate, p_country_id, p_city_id, p_color, p_car_class, p_car_status, p_driver_id)
+    INSERT INTO private.cars (mark, model, number_plate, city_id, color, car_class, car_status, driver_id)
+    VALUES (p_mark, p_model, p_number_plate, p_city_id, p_color, p_car_class, p_car_status, p_driver_id)
     RETURNING id INTO created_car_id;
 
     RETURN QUERY
@@ -242,7 +236,6 @@ CREATE OR REPLACE FUNCTION admin.update_car(
     p_mark VARCHAR(32) DEFAULT NULL,
     p_model VARCHAR(32) DEFAULT NULL,
     p_number_plate VARCHAR(32) DEFAULT NULL,
-    p_country_id BIGINT DEFAULT NULL,
     p_city_id BIGINT DEFAULT NULL,
     p_color public.colors DEFAULT NULL,
     p_car_class public.car_classes DEFAULT NULL,
@@ -254,7 +247,6 @@ BEGIN
         mark         = COALESCE(p_mark, mark),
         model        = COALESCE(p_model, model),
         number_plate = COALESCE(p_number_plate, number_plate),
-        country_id   = COALESCE(p_country_id, country_id),
         city_id      = COALESCE(p_city_id, city_id),
         color        = COALESCE(p_color, color),
         car_class    = COALESCE(p_car_class, car_class),

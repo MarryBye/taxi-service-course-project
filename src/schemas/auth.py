@@ -12,7 +12,6 @@ class RegisterSchema(BaseModel):
     last_name: str = Field(..., max_length=32)
     email: str = Field(..., max_length=32)
     tel_number: str = Field(..., max_length=32)
-    country_id: int = Field(...)
     city_id: int = Field(...)
 
 class AuthenticateResponse(BaseModel):

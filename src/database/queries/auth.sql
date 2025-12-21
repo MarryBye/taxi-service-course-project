@@ -5,7 +5,6 @@ CREATE OR REPLACE FUNCTION public.register(
     p_last_name VARCHAR(32),
     p_email VARCHAR(32),
     p_tel_number VARCHAR(32),
-    p_country_id BIGINT,
     p_city_id BIGINT
 ) RETURNS SETOF admin.users_view SECURITY DEFINER AS $$
 DECLARE
@@ -26,7 +25,6 @@ BEGIN
          last_name,
          email,
          tel_number,
-         country_id,
          city_id
     )
     VALUES (
@@ -36,7 +34,6 @@ BEGIN
         p_last_name,
         p_email,
         p_tel_number,
-        p_country_id,
         p_city_id
     ) RETURNING id INTO created_user_id;
 
@@ -86,5 +83,5 @@ BEGIN
 END;
 $$ LANGUAGE plpgsql;
 
-SELECT * FROM register('MarryBye', 'Ukraine555U', 'Viktor', 'Lukianov', 'vlukianov04@gmail.com', '+380660734348', 1, 1);
+SELECT * FROM register('MarryBye', 'Ukraine555U', 'Viktor', 'Lukianov', 'vlukianov04@gmail.com', '+380660734348', 1);
 SELECT * FROM authenticate('MarryBye', 'Ukraine555U');

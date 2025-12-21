@@ -11,7 +11,6 @@ class UsersView(BaseModel):
     email: str = Field(...)
     tel_number: str = Field(...)
 
-    country: Country = Field(...)
     city: City = Field(...)
 
     role: UserRoles = Field(...)
@@ -39,7 +38,6 @@ class CarsView(BaseModel):
     mark: str = Field(...)
     model: str = Field(...)
     number_plate: str = Field(...)
-    country: Country = Field(...)
     city: City = Field(...)
     color: Colors = Field(...)
     car_class: CarClasses = Field(...)

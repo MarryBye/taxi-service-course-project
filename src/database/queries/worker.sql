@@ -47,8 +47,7 @@ BEGIN
             orders.driver IS NULL
             AND orders.status = 'searching_for_driver'
             AND orders.order_class = car_rec.car_class
-            AND (orders.client->'city'->>'id')::BIGINT = car_rec.city_id
-            AND (orders.client->'country'->>'id')::BIGINT = car_rec.country_id;
+            AND (orders.client->'city'->>'id')::BIGINT = car_rec.city_id;
 END;
 $$ LANGUAGE plpgsql;
 

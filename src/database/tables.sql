@@ -19,7 +19,6 @@ CREATE TABLE IF NOT EXISTS private.users (
     last_name VARCHAR(32) NOT NULL,
     email VARCHAR(128) NOT NULL UNIQUE CHECK (public.check_email(email)),
     tel_number VARCHAR(32) NOT NULL UNIQUE CHECK (public.check_tel(tel_number)),
-    country_id BIGINT NOT NULL REFERENCES private.countries(id),
     city_id BIGINT NOT NULL REFERENCES private.cities(id),
     role public.user_roles NOT NULL DEFAULT 'client',
 
@@ -33,7 +32,6 @@ CREATE TABLE IF NOT EXISTS private.cars (
 	mark VARCHAR(32) NOT NULL,
 	model VARCHAR(32) NOT NULL,
 	number_plate VARCHAR(32) UNIQUE NOT NULL CHECK (public.check_car_number(number_plate)),
-    country_id BIGINT NOT NULL REFERENCES private.countries(id),
     city_id BIGINT NOT NULL REFERENCES private.cities(id),
     color public.colors NOT NULL,
 	car_class public.car_classes NOT NULL DEFAULT 'standard',

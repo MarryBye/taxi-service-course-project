@@ -22,6 +22,5 @@ class UpdateProfile(BaseModel):
     last_name: str = Field(...)
     email: str = Field(...)
     tel_number: str = Field(...)
-    country_id: int = Field(...)
     city_id: int = Field(...)
     password: str = Field(...)

@@ -8,6 +8,7 @@ class Country(BaseModel):
 
 class City(BaseModel):
     id: int = Field(...)
+    country: Country = Field(...)
     name: str = Field(..., max_length=32)
 
 class Address(BaseModel):
