@@ -77,3 +77,5 @@ CALL admin.create_user(
 SET ROLE "admin";
 SELECT * FROM private.users;
 RESET ROLE;
+
+CALL admin.set_psql_user_role('MarryBye', 'driver')

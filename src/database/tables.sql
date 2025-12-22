@@ -56,7 +56,7 @@ CREATE TABLE IF NOT EXISTS private.orders (
 	id BIGINT GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
 	client_id BIGINT NOT NULL REFERENCES private.users(id) ON DELETE CASCADE,
     driver_id BIGINT REFERENCES private.users(id) ON DELETE SET NULL,
-    transaction_id BIGINT NOT NULL REFERENCES private.transactions(id),
+    transaction_id BIGINT NOT NULL UNIQUE REFERENCES private.transactions(id),
     status public.order_statuses NOT NULL DEFAULT 'searching_for_driver',
     order_class public.car_classes NOT NULL DEFAULT 'standard',
     finished_at TIMESTAMP,
@@ -86,7 +86,9 @@ CREATE TABLE IF NOT EXISTS private.order_cancels (
 	comment VARCHAR(256),
 
     created_at TIMESTAMP NOT NULL DEFAULT NOW(),
-    changed_at TIMESTAMP NOT NULL DEFAULT NOW()
+    changed_at TIMESTAMP NOT NULL DEFAULT NOW(),
+
+    UNIQUE(order_id, canceled_by)
 );
 
 CREATE TABLE IF NOT EXISTS private.order_client_tags (
@@ -109,7 +111,7 @@ CREATE TABLE IF NOT EXISTS private.order_driver_tags (
 
 CREATE TABLE IF NOT EXISTS private.balances (
     id BIGINT GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
-    user_id BIGINT NOT NULL REFERENCES private.users(id) ON DELETE CASCADE,
+    user_id BIGINT NOT NULL UNIQUE REFERENCES private.users(id) ON DELETE CASCADE,
     payment NUMERIC NOT NULL DEFAULT 0 CHECK (payment >= 0),
     earning NUMERIC NOT NULL DEFAULT 0 CHECK (earning >= 0),
 
