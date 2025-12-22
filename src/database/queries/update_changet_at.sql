@@ -6,29 +6,29 @@ END;
 $$ LANGUAGE plpgsql;
 
 CREATE OR REPLACE TRIGGER update_changed_at_trigger
-BEFORE UPDATE ON balances
+BEFORE UPDATE ON private.balances
 FOR EACH ROW EXECUTE PROCEDURE update_changed_at();
 
 CREATE OR REPLACE TRIGGER update_changed_at_trigger
-BEFORE UPDATE ON cars
+BEFORE UPDATE ON private.cars
 FOR EACH ROW EXECUTE PROCEDURE update_changed_at();
 
 CREATE OR REPLACE TRIGGER update_changed_at_trigger
-BEFORE UPDATE ON maintenances
+BEFORE UPDATE ON private.maintenances
 FOR EACH ROW EXECUTE PROCEDURE update_changed_at();
 
 CREATE OR REPLACE TRIGGER update_changed_at_trigger
-BEFORE UPDATE ON order_cancels
+BEFORE UPDATE ON private.order_cancels
 FOR EACH ROW EXECUTE PROCEDURE update_changed_at();
 
 CREATE OR REPLACE TRIGGER update_changed_at_trigger
-BEFORE UPDATE ON order_ratings
+BEFORE UPDATE ON private.order_ratings
 FOR EACH ROW EXECUTE PROCEDURE update_changed_at();
 
 CREATE OR REPLACE TRIGGER update_changed_at_trigger
-BEFORE UPDATE ON orders
+BEFORE UPDATE ON private.orders
 FOR EACH ROW EXECUTE PROCEDURE update_changed_at();
 
 CREATE OR REPLACE TRIGGER update_changed_at_trigger
-BEFORE UPDATE ON users
+BEFORE UPDATE ON private.users
 FOR EACH ROW EXECUTE PROCEDURE update_changed_at();
