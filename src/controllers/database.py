@@ -38,7 +38,11 @@ class DatabaseController:
             executor_username = DB_USER
 
         if executor_username not in self.connections:
-            raise Exception(f"No active connection for {executor_username}")
+            print(f"[DATABASE] Connecting to database as {DB_USER}")
+            executor_username = DB_USER
+
+        if executor_username == DB_USER and executor_username not in self.connections:
+            self.connect()
 
         print(f"[DATABASE] Executing query as {executor_username}")
         conn, cur = self.connections[executor_username]
@@ -57,6 +61,7 @@ class DatabaseController:
         except Exception as e:
             result = e
             conn.rollback()
+            print(e)
 
         finally:
             return result

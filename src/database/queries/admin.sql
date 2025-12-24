@@ -383,3 +383,14 @@ BEGIN
     RETURN QUERY SELECT * FROM admin.transactions_view WHERE id = p_transaction_id;
 END;
 $$ LANGUAGE plpgsql;
+
+SELECT * FROM admin.update_user(
+10,
+              null,
+              null,
+              null,
+              null,
+              null,
+              null,
+              'admin'
+)

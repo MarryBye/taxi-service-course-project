@@ -14,7 +14,7 @@ class AuthorizedService:
         """
         params = []
 
-        return db.execute(query, params=params, fetch_count=-1, executor_username=user.login)
+        return db.execute(query, params=params, fetch_count=1, executor_username=user.login)
 
     @staticmethod
     def get_profile(user: TokenDataSchema = None) -> Exception | UsersView:
@@ -46,7 +46,7 @@ class AuthorizedService:
             SELECT * FROM authorized.cancel_order(
                 p_order_id := %s, 
                 p_comment := %s, 
-                p_tags := %s::public.driver_cancel_tags[]
+                p_tags := %s::VARCHAR(32)[]
             )
         """
         params = [
@@ -83,7 +83,7 @@ class AuthorizedService:
             ]
         ]
 
-        return db.execute(query, params=params, fetch_count=0, executor_username=user.login)
+        return db.execute(query, params=params, fetch_count=1, executor_username=user.login)
 
     @staticmethod
     def order_stat(order_id: int, user: TokenDataSchema = None) -> Exception | OrdersStatView:
@@ -98,7 +98,7 @@ class AuthorizedService:
             order_id
         ]
 
-        return db.execute(query, params=params, fetch_count=-1, executor_username=user.login)
+        return db.execute(query, params=params, fetch_count=1, executor_username=user.login)
 
     @staticmethod
     def orders_history(user: TokenDataSchema = None) -> Exception | list[OrdersView]:
@@ -118,7 +118,7 @@ class AuthorizedService:
                     p_order_id := %s, 
                     p_mark := %s, 
                     p_comment := %s, 
-                    p_tags := %s::public.driver_tags[]          
+                    p_tags := %s::VARCHAR(32)[]         
                 )
         """
         params = [

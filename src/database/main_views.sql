@@ -40,7 +40,9 @@ SELECT
     AVG(routes.distance) AS average_distance,
     MAX(routes.distance) AS max_distance,
     AVG(order_ratings.mark) AS client_rating,
-    ARRAY_AGG(order_client_tags.tag) AS all_tags
+    ARRAY_AGG(order_client_tags.tag)
+        FILTER (WHERE order_client_tags.tag IS NOT NULL)
+        AS all_tags
 FROM private.users AS users
 LEFT JOIN private.orders AS orders ON orders.client_id = users.id
 LEFT JOIN private.routes AS routes ON routes.order_id = orders.id
@@ -74,13 +76,16 @@ SELECT
     AVG(routes.distance) AS average_distance,
     MAX(routes.distance) AS max_distance,
     AVG(order_ratings.mark) AS driver_rating,
-    ARRAY_AGG(order_driver_tags.tag) AS all_tags
+    ARRAY_AGG(order_driver_tags.tag)
+        FILTER (WHERE order_driver_tags.tag IS NOT NULL)
+        AS all_tags
 FROM private.users AS users
 LEFT JOIN private.cars AS cars ON cars.driver_id = users.id
 LEFT JOIN private.orders AS orders ON orders.driver_id = users.id
 LEFT JOIN private.routes AS routes ON routes.order_id = orders.id
 LEFT JOIN private.order_ratings AS order_ratings ON order_ratings.order_id = orders.id AND order_ratings.mark_by != orders.driver_id
 LEFT JOIN private.order_driver_tags AS order_driver_tags ON order_driver_tags.order_id = orders.id
+WHERE users.role = 'driver'
 GROUP BY users.id, cars.id;
 
 CREATE OR REPLACE VIEW admin.cars_view AS
@@ -278,3 +283,22 @@ SELECT
     transactions.amount,
     transactions.created_at
 FROM private.transactions AS transactions;
+
+CREATE OR REPLACE VIEW public.countries_view AS
+SELECT
+    id,
+    code,
+    full_name
+FROM private.countries;
+
+CREATE OR REPLACE VIEW public.cities_view AS
+SELECT
+    cities.id,
+    json_build_object(
+        'id', countries.id,
+        'code', countries.code,
+        'full_name', countries.full_name
+    ) AS country,
+    cities.name
+FROM private.cities
+JOIN private.countries ON cities.country_id = countries.id;

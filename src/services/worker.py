@@ -23,7 +23,7 @@ class WorkersService:
         query = """SELECT * FROM workers.acceptable_orders()"""
         params = []
 
-        return db.execute(query, params=params, fetch_count=1, executor_username=user.login)
+        return db.execute(query, params=params, fetch_count=-1, executor_username=user.login)
 
     @staticmethod
     def cancel_order(order_id: int, data: CancelOrderSchema, user: TokenDataSchema = None) -> Exception | OrdersStatView:
@@ -33,7 +33,7 @@ class WorkersService:
                 SELECT * FROM workers.cancel_order(
                     p_order_id := %s, 
                     p_comment := %s, 
-                    p_tags := %s::public.client_cancel_tags[]
+                    p_tags := %s::VARCHAR(32)[]
                 )
         """
         params = [
@@ -75,7 +75,7 @@ class WorkersService:
         query = """SELECT * FROM workers.orders_history()"""
         params = []
 
-        return db.execute(query, params=params, fetch_count=1, executor_username=user.login)
+        return db.execute(query, params=params, fetch_count=-1, executor_username=user.login)
 
     @staticmethod
     def rate_order(order_id: int, data: RateOrderSchema, user: TokenDataSchema = None) -> Exception | OrdersStatView:
@@ -86,7 +86,7 @@ class WorkersService:
                     p_order_id := %s, 
                     p_mark := %s, 
                     p_comment := %s, 
-                    p_tags := %s::public.client_tags[]
+                    p_tags := %s::VARCHAR(32)[]
             )
         """
         params = [

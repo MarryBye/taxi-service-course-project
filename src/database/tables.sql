@@ -94,7 +94,7 @@ CREATE TABLE IF NOT EXISTS private.order_cancels (
 CREATE TABLE IF NOT EXISTS private.order_client_tags (
     id BIGINT GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
     order_id BIGINT NOT NULL REFERENCES private.orders(id) ON DELETE CASCADE,
-    tag public.client_tags NOT NULL,
+    tag VARCHAR(32) NOT NULL,
     UNIQUE(order_id, tag),
 
     created_at TIMESTAMP NOT NULL DEFAULT NOW()
@@ -103,7 +103,7 @@ CREATE TABLE IF NOT EXISTS private.order_client_tags (
 CREATE TABLE IF NOT EXISTS private.order_driver_tags (
     id BIGINT GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
     order_id BIGINT NOT NULL REFERENCES private.orders(id) ON DELETE CASCADE,
-    tag public.driver_tags NOT NULL,
+    tag VARCHAR(32) NOT NULL,
     UNIQUE(order_id, tag),
 
     created_at TIMESTAMP NOT NULL DEFAULT NOW()

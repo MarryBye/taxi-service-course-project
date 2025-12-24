@@ -5,6 +5,7 @@ from src.routes.auth import router as auth_router
 from src.routes.admin import router as admin_router
 from src.routes.worker import router as worker_router
 from src.routes.authorized import router as authorized_router
+from src.routes.public import router as public_router
 
 app = FastAPI()
 
@@ -23,3 +24,4 @@ app.include_router(auth_router, tags=["Auth"], prefix="/api")
 app.include_router(admin_router, tags=["Admin"], prefix="/api")
 app.include_router(worker_router, tags=["Worker"], prefix="/api")
 app.include_router(authorized_router, tags=["Client"], prefix="/api")
+app.include_router(public_router, tags=["Public"], prefix="/api")

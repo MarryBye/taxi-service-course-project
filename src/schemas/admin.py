@@ -19,7 +19,7 @@ class UpdateCarSchema(BaseModel):
     mark: Optional[str] = Field(...)
     model: Optional[str] = Field(...)
     number_plate: Optional[str] = Field(...)
-    city_id: int = Field(...)
+    city_id: Optional[int] = Field(...)
     color: Optional[Colors] = Field(...)
     car_class: CarClasses = Field(...)
     car_status: CarStatuses = Field(...)

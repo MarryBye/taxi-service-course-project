@@ -21,7 +21,7 @@ async def orders_history(user: TokenDataSchema = Depends(require_roles('driver')
     return data
 
 @router.get('/orders/current')
-async def current_order(user: TokenDataSchema = Depends(require_roles('driver'))) -> OrdersView:
+async def current_order(user: TokenDataSchema = Depends(require_roles('driver'))) -> OrdersView | None:
     data = WorkersService.current_order(user)
 
     if isinstance(data, Exception):
@@ -32,6 +32,7 @@ async def current_order(user: TokenDataSchema = Depends(require_roles('driver'))
 @router.get('/orders/acceptable')
 async def acceptable_orders(user: TokenDataSchema = Depends(require_roles('driver'))) -> list[OrdersView]:
     data = WorkersService.acceptable_orders(user)
+    print(data)
 
     if isinstance(data, Exception):
         raise HTTPException(400, str(data))

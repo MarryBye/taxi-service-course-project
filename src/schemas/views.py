@@ -1,6 +1,6 @@
 from pydantic import BaseModel, Field
 from datetime import datetime
-from typing import Optional
+from typing import Optional, Union
 from src.schemas.common import Country, City, Transaction, Route, Rating, Cancel
 from src.enums.db import UserRoles, ClientTags, ClientCancelTags, Colors, CarClasses, CarStatuses, DriverTags, DriverCancelTags, OrderStatuses, TransactionType, BalanceTypes, PaymentMethods
 
@@ -27,10 +27,10 @@ class ClientsStatView(BaseModel):
     rides_count: int = Field(...)
     finished_rides_count: int = Field(...)
     canceled_rides_count: int = Field(...)
-    average_distance: float = Field(...)
-    max_distance: float = Field(...)
-    client_rating: float = Field(...)
-    all_tags: Optional[list[ClientTags | ClientCancelTags]] = Field(...)
+    average_distance: Optional[float] = Field(...)
+    max_distance: Optional[float] = Field(...)
+    client_rating: Optional[float] = Field(...)
+    all_tags: Optional[list[Union[ClientTags, ClientCancelTags]]] = Field(...)
 
 class CarsView(BaseModel):
     id: int = Field(...)
@@ -45,16 +45,27 @@ class CarsView(BaseModel):
     created_at: datetime = Field(...)
     changed_at: datetime = Field(...)
 
+class DriverStatCar(BaseModel):
+    id: int = Field(...)
+    mark: str = Field(...)
+    model: str = Field(...)
+    number_plate: str = Field(...)
+    color: Colors = Field(...)
+    car_class: CarClasses = Field(...)
+    car_status: CarStatuses = Field(...)
+    created_at: datetime = Field(...)
+    changed_at: datetime = Field(...)
+
 class DriversStatView(BaseModel):
     id: int = Field(...)
-    car: Optional[CarsView] = Field(...)
+    car: Optional[DriverStatCar] = Field(...)
     rides_count: int = Field(...)
     finished_rides_count: int = Field(...)
     canceled_rides_count: int = Field(...)
-    average_distance: float = Field(...)
-    max_distance: float = Field(...)
-    driver_rating: float = Field(...)
-    all_tags: Optional[list[DriverTags | DriverCancelTags]] = Field(...)
+    average_distance: Optional[float] = Field(...)
+    max_distance: Optional[float] = Field(...)
+    driver_rating: Optional[float] = Field(...)
+    all_tags: Optional[list[Union[DriverTags, DriverCancelTags]]] = Field(...)
 
 class OrdersView(BaseModel):
     id: int = Field(...)

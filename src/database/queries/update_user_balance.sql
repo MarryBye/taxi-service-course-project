@@ -49,7 +49,7 @@ FOR EACH ROW EXECUTE PROCEDURE update_user_balance();
 
 CREATE OR REPLACE FUNCTION create_user_balance() RETURNS trigger AS $$
 BEGIN
-    INSERT INTO private.balances (user_id, payment, earning) VALUES (NEW.user_id, 0, 0);
+    INSERT INTO private.balances (user_id, payment, earning) VALUES (NEW.id, 0, 0);
     RETURN NEW;
 END;
 $$ LANGUAGE plpgsql;

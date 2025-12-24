@@ -58,6 +58,9 @@ CREATE OR REPLACE FUNCTION authorized.make_order(
     p_addresses address[]
 ) RETURNS SETOF admin.orders_view SECURITY DEFINER AS $$
 DECLARE
+    has_current_order BOOLEAN := (SELECT EXISTS(
+        SELECT 1 FROM authorized.current_order()
+    ));
     user_id BIGINT := public.get_current_user_from_session();
     transaction_id BIGINT;
     order_id BIGINT;
@@ -76,6 +79,10 @@ BEGIN
 
     IF (p_addresses IS NULL) THEN
         RAISE EXCEPTION 'Invalid addresses';
+    END IF;
+
+    IF has_current_order THEN
+        RAISE EXCEPTION 'You already have an active order';
     END IF;
 
     FOREACH ad IN ARRAY p_addresses LOOP
@@ -166,11 +173,11 @@ $$ LANGUAGE plpgsql;
 CREATE OR REPLACE FUNCTION authorized.cancel_order(
     p_order_id BIGINT,
     p_comment VARCHAR(256),
-    p_tags public.driver_cancel_tags[]
+    p_tags VARCHAR(32)[]
 ) RETURNS SETOF admin.orders_stat_view SECURITY DEFINER AS $$
 DECLARE
     user_id BIGINT := public.get_current_user_from_session();
-    tag driver_cancel_tags;
+    tag VARCHAR(32);
 BEGIN
     IF user_id IS NULL THEN
         RAISE EXCEPTION 'User not found';
@@ -185,6 +192,12 @@ BEGIN
     IF (array_length(p_tags, 1) < 1) OR (array_length(p_tags, 1) > 3) THEN
         RAISE EXCEPTION 'Invalid number of tags';
     END IF;
+
+    UPDATE private.orders
+    SET status = 'canceled',
+        changed_at = NOW()
+    WHERE id = p_order_id
+      AND client_id = user_id;
 
     INSERT INTO private.order_cancels(order_id, canceled_by, comment)
     VALUES (p_order_id, user_id, p_comment);
@@ -202,11 +215,11 @@ CREATE OR REPLACE FUNCTION authorized.rate_order(
     p_order_id BIGINT,
     p_mark INT,
     p_comment VARCHAR(256),
-    p_tags public.driver_tags[]
+    p_tags VARCHAR(32)[]
 ) RETURNS SETOF admin.orders_stat_view SECURITY DEFINER AS $$
 DECLARE
     user_id BIGINT := public.get_current_user_from_session();
-    tag driver_tags;
+    tag VARCHAR(32);
 BEGIN
     IF user_id IS NULL THEN
         RAISE EXCEPTION 'User not found';
