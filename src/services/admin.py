@@ -32,7 +32,7 @@ class AdminService:
             data.driver_id
         ]
 
-        return db.execute(query, params=params, fetch_count=-1, executor_username=user.login)
+        return db.execute(query, params=params, fetch_count=1, executor_username=user.login)
 
     @staticmethod
     def create_maintenance(data: CreateMaintenanceSchema, user: TokenDataSchema = None) -> Exception | MaintenancesView:
@@ -59,7 +59,7 @@ class AdminService:
             data.maintenance_end
         ]
 
-        return db.execute(query, params=params, fetch_count=-1, executor_username=user.login)
+        return db.execute(query, params=params, fetch_count=1, executor_username=user.login)
 
     @staticmethod
     def create_transaction(data: CreateTransactionSchema, user: TokenDataSchema = None) -> Exception | TransactionsView:
@@ -82,7 +82,7 @@ class AdminService:
             data.amount
         ]
 
-        return db.execute(query, params=params, fetch_count=-1, executor_username=user.login)
+        return db.execute(query, params=params, fetch_count=1, executor_username=user.login)
 
     @staticmethod
     def create_user(data: CreateUserSchema, user: TokenDataSchema = None) -> Exception | UsersView:
@@ -111,7 +111,7 @@ class AdminService:
             data.role
         ]
 
-        return db.execute(query, params=params, fetch_count=-1, executor_username=user.login)
+        return db.execute(query, params=params, fetch_count=1, executor_username=user.login)
 
     @staticmethod
     def delete_car(car_id: int, user: TokenDataSchema = None) -> Exception | None:
@@ -149,7 +149,7 @@ class AdminService:
         query = """SELECT * FROM admin.get_car(%s)"""
         params = [car_id]
 
-        return db.execute(query, params=params, fetch_count=-1, executor_username=user.login)
+        return db.execute(query, params=params, fetch_count=1, executor_username=user.login)
 
     @staticmethod
     def get_cars(user: TokenDataSchema = None) -> Exception | list[CarsView]:
@@ -167,7 +167,7 @@ class AdminService:
         query = """SELECT * FROM admin.get_client_statistics(%s)"""
         params = [user_id]
 
-        return db.execute(query, params=params, fetch_count=-1, executor_username=user.login)
+        return db.execute(query, params=params, fetch_count=1, executor_username=user.login)
 
     @staticmethod
     def get_driver_statistics(user_id: int, user: TokenDataSchema = None) -> Exception | DriversStatView:
@@ -176,7 +176,7 @@ class AdminService:
         query = """SELECT * FROM admin.get_driver_statistics(%s)"""
         params = [user_id]
 
-        return db.execute(query, params=params, fetch_count=-1, executor_username=user.login)
+        return db.execute(query, params=params, fetch_count=1, executor_username=user.login)
 
     @staticmethod
     def get_maintenance(maintenance_id: int, user: TokenDataSchema = None) -> Exception | MaintenancesView:
@@ -185,7 +185,7 @@ class AdminService:
         query = """SELECT * FROM admin.get_maintenance(%s)"""
         params = [maintenance_id]
 
-        return db.execute(query, params=params, fetch_count=-1, executor_username=user.login)
+        return db.execute(query, params=params, fetch_count=1, executor_username=user.login)
 
     @staticmethod
     def get_maintenances(user: TokenDataSchema = None) -> Exception | list[MaintenancesView]:
@@ -203,7 +203,7 @@ class AdminService:
         query = """SELECT * FROM admin.get_order(%s)"""
         params = [order_id]
 
-        return db.execute(query, params=params, fetch_count=-1, executor_username=user.login)
+        return db.execute(query, params=params, fetch_count=1, executor_username=user.login)
 
     @staticmethod
     def get_order_statistics(order_id: int, user: TokenDataSchema = None) -> Exception | OrdersStatView:
@@ -212,7 +212,7 @@ class AdminService:
         query = """SELECT * FROM admin.get_order_statistics(%s)"""
         params = [order_id]
 
-        return db.execute(query, params=params, fetch_count=-1, executor_username=user.login)
+        return db.execute(query, params=params, fetch_count=1, executor_username=user.login)
 
     @staticmethod
     def get_orders(user: TokenDataSchema = None) -> Exception | list[OrdersView]:
@@ -230,7 +230,7 @@ class AdminService:
         query = """SELECT * FROM admin.get_transaction(%s)"""
         params = [transaction_id]
 
-        return db.execute(query, params=params, fetch_count=-1, executor_username=user.login)
+        return db.execute(query, params=params, fetch_count=1, executor_username=user.login)
 
     @staticmethod
     def get_transactions(user: TokenDataSchema = None) -> Exception | list[TransactionsView]:
@@ -248,7 +248,7 @@ class AdminService:
         query = """SELECT * FROM admin.get_user(%s)"""
         params = [user_id]
 
-        return db.execute(query, params=params, fetch_count=-1, executor_username=user.login)
+        return db.execute(query, params=params, fetch_count=1, executor_username=user.login)
 
     @staticmethod
     def get_users(user: TokenDataSchema = None) -> Exception | list[UsersView]:
@@ -288,7 +288,7 @@ class AdminService:
             data.driver_id
         ]
 
-        return db.execute(query, params=params, fetch_count=-1, executor_username=user.login)
+        return db.execute(query, params=params, fetch_count=1, executor_username=user.login)
 
     @staticmethod
     def update_maintenance(maintenance_id: int, data: UpdateMaintenanceSchema, user: TokenDataSchema = None) -> Exception | MaintenancesView:
@@ -305,7 +305,7 @@ class AdminService:
             data.status
         ]
 
-        return db.execute(query, params=params, fetch_count=-1, executor_username=user.login)
+        return db.execute(query, params=params, fetch_count=1, executor_username=user.login)
 
     @staticmethod
     def update_order(order_id: int, data: UpdateOrderSchema, user: TokenDataSchema = None) -> Exception | OrdersView:
@@ -324,7 +324,7 @@ class AdminService:
             data.order_class
         ]
 
-        return db.execute(query, params=params, fetch_count=-1, executor_username=user.login)
+        return db.execute(query, params=params, fetch_count=1, executor_username=user.login)
 
     @staticmethod
     def update_user(user_id: int, data: UpdateUserSchema, user: TokenDataSchema = None) -> Exception | UsersView:
@@ -353,4 +353,4 @@ class AdminService:
             data.role
         ]
 
-        return db.execute(query, params=params, fetch_count=-1, executor_username=user.login)
+        return db.execute(query, params=params, fetch_count=1, executor_username=user.login)
