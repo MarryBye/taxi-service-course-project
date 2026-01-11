@@ -26,6 +26,17 @@ class WorkersService:
         return db.execute(query, params=params, fetch_count=-1, executor_username=user.login)
 
     @staticmethod
+    def get_order(order_id: int, user: TokenDataSchema = None) -> Exception | OrdersView:
+        db = DatabaseController()
+
+        query = """SELECT * FROM workers.get_driver_order(
+            p_order_id := %s
+        )"""
+        params = [order_id]
+
+        return db.execute(query, params=params, fetch_count=1, executor_username=user.login)
+
+    @staticmethod
     def cancel_order(order_id: int, data: CancelOrderSchema, user: TokenDataSchema = None) -> Exception | OrdersStatView:
         db = DatabaseController()
 

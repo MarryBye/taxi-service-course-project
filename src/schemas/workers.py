@@ -1,6 +1,6 @@
 from pydantic import BaseModel, Field
 
-from src.enums.db import DriverCancelTags, DriverTags
+from src.enums.db import DriverCancelTags, DriverTags, ClientTags
 
 class CancelOrderSchema(BaseModel):
     comment: str = Field(...)
@@ -9,4 +9,4 @@ class CancelOrderSchema(BaseModel):
 class RateOrderSchema(BaseModel):
     mark: int = Field(...)
     comment: str = Field(...)
-    tags: list[DriverTags]
+    tags: list[ClientTags] = Field(...)

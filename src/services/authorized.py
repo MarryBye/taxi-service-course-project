@@ -101,6 +101,21 @@ class AuthorizedService:
         return db.execute(query, params=params, fetch_count=1, executor_username=user.login)
 
     @staticmethod
+    def get_order(order_id: int, user: TokenDataSchema = None) -> Exception | OrdersView:
+        db = DatabaseController()
+
+        query = """
+            SELECT * FROM authorized.get_client_order(
+                p_order_id := %s
+            )
+        """
+        params = [
+            order_id
+        ]
+
+        return db.execute(query, params=params, fetch_count=1, executor_username=user.login)
+
+    @staticmethod
     def orders_history(user: TokenDataSchema = None) -> Exception | list[OrdersView]:
         db = DatabaseController()
 

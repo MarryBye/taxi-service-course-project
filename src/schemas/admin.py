@@ -59,7 +59,6 @@ class UpdateUserSchema(BaseModel):
     email: Optional[str] = Field(...)
     tel_number: Optional[str] = Field(...)
     city_id: int = Field(...)
-    password: Optional[str] = Field(...)
     role: Optional[UserRoles] = Field(...)
 
 class UpdateOrderSchema(BaseModel):

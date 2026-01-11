@@ -53,7 +53,16 @@ async def current_order(user: TokenDataSchema = Depends(require_auth)) -> Orders
     return data
 
 @router.get('/orders/{order_id}')
-async def order_info(order_id: int, user: TokenDataSchema = Depends(require_auth)) -> OrdersStatView:
+async def order_info(order_id: int, user: TokenDataSchema = Depends(require_auth)) -> OrdersView:
+    data = AuthorizedService.get_order(order_id, user)
+
+    if isinstance(data, Exception):
+        raise HTTPException(400, str(data))
+
+    return data
+
+@router.get('/orders/{order_id}/stat')
+async def order_stat(order_id: int, user: TokenDataSchema = Depends(require_auth)) -> OrdersStatView:
     data = AuthorizedService.order_stat(order_id, user)
 
     if isinstance(data, Exception):

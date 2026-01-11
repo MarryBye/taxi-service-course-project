@@ -32,7 +32,7 @@ async def current_order(user: TokenDataSchema = Depends(require_roles('driver'))
 @router.get('/orders/acceptable')
 async def acceptable_orders(user: TokenDataSchema = Depends(require_roles('driver'))) -> list[OrdersView]:
     data = WorkersService.acceptable_orders(user)
-    print(data)
+
 
     if isinstance(data, Exception):
         raise HTTPException(400, str(data))
@@ -40,6 +40,15 @@ async def acceptable_orders(user: TokenDataSchema = Depends(require_roles('drive
     return data
 
 @router.get('/orders/{order_id}')
+async def order_info(order_id: int, user: TokenDataSchema = Depends(require_roles('driver'))) -> OrdersView | None:
+    data = WorkersService.get_order(order_id, user)
+
+    if isinstance(data, Exception):
+        raise HTTPException(400, str(data))
+
+    return data
+
+@router.get('/orders/{order_id}/stat')
 async def order_stat(order_id: int, user: TokenDataSchema = Depends(require_roles('driver'))) -> OrdersStatView:
     data = WorkersService.order_stat(order_id, user)
 
@@ -95,7 +104,7 @@ async def submit_start(order_id: int, user: TokenDataSchema = Depends(require_ro
 
 @router.post('/orders/{order_id}/finish')
 async def submit_finish(order_id: int, user: TokenDataSchema = Depends(require_roles('driver'))) -> OrdersView:
-    data = WorkersService.submit_start(order_id, user)
+    data = WorkersService.submit_finish(order_id, user)
 
     if isinstance(data, Exception):
         raise HTTPException(400, str(data))

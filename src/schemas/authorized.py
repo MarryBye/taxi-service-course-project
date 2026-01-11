@@ -1,6 +1,7 @@
 from pydantic import BaseModel, Field
 from datetime import datetime
-from src.enums.db import ClientCancelTags, ClientTags, OrderStatuses, CarClasses, PaymentMethods
+
+from src.enums.db import ClientCancelTags, ClientTags, OrderStatuses, CarClasses, PaymentMethods, DriverTags, DriverCancelTags
 from src.schemas.common import Address
 
 class CancelOrderSchema(BaseModel):
@@ -15,7 +16,7 @@ class MakeOrderSchema(BaseModel):
 class RateOrderSchema(BaseModel):
     mark: int = Field(...)
     comment: str = Field(...)
-    tags: list[ClientTags] = Field(...)
+    tags: list[DriverTags] = Field(...)
 
 class UpdateProfile(BaseModel):
     first_name: str = Field(...)

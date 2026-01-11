@@ -38,6 +38,14 @@ class CarsUserView(BaseModel):
     created_at: datetime = Field(...)
     changed_at: datetime = Field(...)
 
+class ClientStatTags(BaseModel):
+    tag: Union[ClientTags, DriverCancelTags] = Field(...)
+    count: int = Field(...)
+
+class DriverStatTags(BaseModel):
+    tag: Union[DriverTags, ClientCancelTags] = Field(...)
+    count: int = Field(...)
+
 class ClientsStatView(BaseModel):
     id: int = Field(...)
 
@@ -47,7 +55,7 @@ class ClientsStatView(BaseModel):
     average_distance: Optional[float] = Field(...)
     max_distance: Optional[float] = Field(...)
     client_rating: Optional[float] = Field(...)
-    all_tags: Optional[list[Union[ClientTags, ClientCancelTags]]] = Field(...)
+    all_tags: Optional[list[ClientStatTags]] = Field(...)
 
 class CarsView(BaseModel):
     id: int = Field(...)
@@ -82,7 +90,7 @@ class DriversStatView(BaseModel):
     average_distance: Optional[float] = Field(...)
     max_distance: Optional[float] = Field(...)
     driver_rating: Optional[float] = Field(...)
-    all_tags: Optional[list[Union[DriverTags, DriverCancelTags]]] = Field(...)
+    all_tags: Optional[list[DriverStatTags]] = Field(...)
 
 class OrdersView(BaseModel):
     id: int = Field(...)

@@ -338,7 +338,6 @@ class AdminService:
                 p_email := %s, 
                 p_tel_number := %s, 
                 p_city_id := %s, 
-                p_password := %s, 
                 p_role := %s
             )
         """
@@ -349,7 +348,6 @@ class AdminService:
             data.email,
             data.tel_number,
             data.city_id,
-            data.password,
             data.role
         ]
 
