@@ -84,6 +84,7 @@ async def create_car(data: CreateCarSchema, user: TokenDataSchema = Depends(requ
 @router.get('/cars')
 async def cars_list(user: TokenDataSchema = Depends(require_roles('admin'))) -> list[CarsView]:
     data = AdminService.get_cars(user)
+    print("data", data)
 
     if isinstance(data, Exception):
         raise HTTPException(400, str(data))
@@ -135,9 +136,9 @@ async def order_info(order_id: int, user: TokenDataSchema = Depends(require_role
 
     return data
 
-@router.put('/orders/{order_id}')
-async def update_order(order_id: int, data: UpdateOrderSchema, user: TokenDataSchema = Depends(require_roles('admin'))) -> OrdersView:
-    data = AdminService.update_order(order_id, data, user)
+@router.get('/orders/{order_id}/stats')
+async def order_stats(order_id: int, user: TokenDataSchema = Depends(require_roles('admin'))) -> OrdersStatView:
+    data = AdminService.get_order_statistics(order_id, user)
 
     if isinstance(data, Exception):
         raise HTTPException(400, str(data))
@@ -146,7 +147,9 @@ async def update_order(order_id: int, data: UpdateOrderSchema, user: TokenDataSc
 
 @router.post('/maintenances')
 async def create_maintenance(data: CreateMaintenanceSchema, user: TokenDataSchema = Depends(require_roles('admin'))) -> MaintenancesView:
+    print(data)
     data = AdminService.create_maintenance(data, user)
+    print(data)
 
     if isinstance(data, Exception):
         raise HTTPException(400, str(data))

@@ -2,7 +2,9 @@ from pydantic import BaseModel, Field
 from datetime import datetime
 from typing import Optional, Union
 from src.schemas.common import Country, City, Transaction, Route, Rating, Cancel
-from src.enums.db import UserRoles, ClientTags, ClientCancelTags, Colors, CarClasses, CarStatuses, DriverTags, DriverCancelTags, OrderStatuses, TransactionType, BalanceTypes, PaymentMethods
+from src.enums.db import UserRoles, ClientTags, ClientCancelTags, Colors, CarClasses, CarStatuses, DriverTags, \
+    DriverCancelTags, OrderStatuses, TransactionType, BalanceTypes, PaymentMethods, MaintenanceStatuses
+
 
 class UsersView(BaseModel):
     id: int = Field(...)
@@ -12,6 +14,21 @@ class UsersView(BaseModel):
     tel_number: str = Field(...)
 
     city: City = Field(...)
+
+    role: UserRoles = Field(...)
+
+    payment_balance: int = Field(...)
+    earning_balance: int = Field(...)
+
+    created_at: datetime = Field(...)
+    changed_at: datetime = Field(...)
+
+class CarsUserView(BaseModel):
+    id: int = Field(...)
+    first_name: str = Field(...)
+    last_name: str = Field(...)
+    email: str = Field(...)
+    tel_number: str = Field(...)
 
     role: UserRoles = Field(...)
 
@@ -34,7 +51,7 @@ class ClientsStatView(BaseModel):
 
 class CarsView(BaseModel):
     id: int = Field(...)
-    driver: Optional[UsersView] = Field(...)
+    driver: Optional[CarsUserView] = Field(...)
     mark: str = Field(...)
     model: str = Field(...)
     number_plate: str = Field(...)
@@ -95,9 +112,11 @@ class MaintenancesView(BaseModel):
     maintenance_end: datetime = Field(...)
     created_at: datetime = Field(...)
     changed_at: datetime = Field(...)
+    status: MaintenanceStatuses = Field(...)
 
 class TransactionsView(BaseModel):
     id: int = Field(...)
+    user: UsersView = Field(...)
     balance_type: BalanceTypes = Field(...)
     transaction_type: TransactionType = Field(...)
     payment_method: PaymentMethods = Field(...)
