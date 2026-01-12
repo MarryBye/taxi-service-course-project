@@ -10,3 +10,6 @@ class RateOrderSchema(BaseModel):
     mark: int = Field(...)
     comment: str = Field(...)
     tags: list[ClientTags] = Field(...)
+
+class WithdrawCashSchema(BaseModel):
+    amount: int = Field(...)

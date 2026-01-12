@@ -25,3 +25,6 @@ class UpdateProfile(BaseModel):
     tel_number: str = Field(...)
     city_id: int = Field(...)
     password: str = Field(...)
+
+class AddFundsSchema(BaseModel):
+    amount: int = Field(...)

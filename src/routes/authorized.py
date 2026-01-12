@@ -97,3 +97,12 @@ async def stats(user: TokenDataSchema = Depends(require_auth)) -> ClientsStatVie
         raise HTTPException(400, str(data))
 
     return data
+
+@router.put('/add_funds')
+async def add_funds(data: AddFundsSchema, user: TokenDataSchema = Depends(require_auth)) -> None:
+    data = AuthorizedService.add_funds(data, user)
+
+    if isinstance(data, Exception):
+        raise HTTPException(400, str(data))
+
+    return data

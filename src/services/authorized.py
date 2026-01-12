@@ -171,3 +171,17 @@ class AuthorizedService:
         ]
 
         return db.execute(query, params=params, fetch_count=0, executor_username=user.login)
+
+    @staticmethod
+    def add_funds(data: AddFundsSchema, user: TokenDataSchema) -> Exception | None:
+        db = DatabaseController()
+
+        query = """
+            SELECT * FROM authorized.add_funds(
+                p_amount := %s
+            )
+        """
+
+        params = [data.amount]
+
+        return db.execute(query, params=params, fetch_count=0, executor_username=user.login)

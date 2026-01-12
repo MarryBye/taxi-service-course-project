@@ -119,3 +119,12 @@ async def stats(user: TokenDataSchema = Depends(require_roles('driver'))) -> Dri
         raise HTTPException(400, str(data))
 
     return data
+
+@router.put('/withdraw_cash')
+async def withdraw_cash(data: WithdrawCashSchema, user: TokenDataSchema = Depends(require_roles('driver'))) -> None:
+    data = WorkersService.withdraw_cash(data, user)
+
+    if isinstance(data, Exception):
+        raise HTTPException(400, str(data))
+
+    return data

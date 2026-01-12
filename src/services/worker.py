@@ -154,3 +154,17 @@ class WorkersService:
         params = []
 
         return db.execute(query, params=params, fetch_count=1, executor_username=user.login)
+
+    @staticmethod
+    def withdraw_cash(data: WithdrawCashSchema, user: TokenDataSchema) -> Exception | None:
+        db = DatabaseController()
+
+        query = """
+            SELECT * FROM workers.withdraw_cash(
+                p_amount := %s
+            )
+        """
+
+        params = [data.amount]
+
+        return db.execute(query, params=params, fetch_count=0, executor_username=user.login)
