@@ -9,7 +9,7 @@ class AuthService:
         db = DatabaseController()
         db.connect()
 
-        query = "SELECT * FROM authenticate(%s, %s)"
+        query = "SELECT * FROM public.authenticate(%s, %s)"
         params = [data.login, data.password]
 
         return db.execute(query, params=params, fetch_count=1)
@@ -19,7 +19,7 @@ class AuthService:
         db = DatabaseController()
         db.connect()
 
-        query = "SELECT * FROM register(%s, %s, %s, %s, %s, %s, %s)"
+        query = "SELECT * FROM public.register(%s, %s, %s, %s, %s, %s, %s)"
         params = [
             data.login,
             data.password,

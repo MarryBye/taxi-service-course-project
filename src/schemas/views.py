@@ -1,5 +1,5 @@
 from pydantic import BaseModel, Field
-from datetime import datetime
+from datetime import datetime, timedelta
 from typing import Optional, Union
 from src.schemas.common import Country, City, Transaction, Route, Rating, Cancel
 from src.enums.db import UserRoles, ClientTags, ClientCancelTags, Colors, CarClasses, CarStatuses, DriverTags, \
@@ -109,7 +109,7 @@ class OrdersStatView(BaseModel):
     rating_by_client: Optional[Rating] = Field(...)
     rating_by_driver: Optional[Rating] = Field(...)
     cancel_info: Optional[Cancel] = Field(...)
-    duration: Optional[int] = Field(...)
+    duration: Optional[timedelta] = Field(...)
 
 class MaintenancesView(BaseModel):
     id: int = Field(...)
