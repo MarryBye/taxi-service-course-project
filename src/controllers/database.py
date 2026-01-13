@@ -64,5 +64,4 @@ class DatabaseController:
             print(e)
 
         finally:
-            print(result)
             return result

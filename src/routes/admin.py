@@ -111,6 +111,7 @@ async def delete_car(car_id: int, user: TokenDataSchema = Depends(require_roles(
 
 @router.put('/cars/{car_id}')
 async def update_car(car_id: int, data: UpdateCarSchema, user: TokenDataSchema = Depends(require_roles('admin'))) -> CarsView:
+    print("UPDATE CAR:", data)
     data = AdminService.update_car(car_id, data, user)
 
     if isinstance(data, Exception):
@@ -147,9 +148,7 @@ async def order_stats(order_id: int, user: TokenDataSchema = Depends(require_rol
 
 @router.post('/maintenances')
 async def create_maintenance(data: CreateMaintenanceSchema, user: TokenDataSchema = Depends(require_roles('admin'))) -> MaintenancesView:
-    print(data)
     data = AdminService.create_maintenance(data, user)
-    print(data)
 
     if isinstance(data, Exception):
         raise HTTPException(400, str(data))
