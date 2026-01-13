@@ -41,7 +41,7 @@ class AuthorizedService:
     @staticmethod
     def cancel_order(order_id: int, data: CancelOrderSchema, user: TokenDataSchema = None) -> Exception | OrdersStatView:
         db = DatabaseController()
-
+        print(order_id)
         query = """
             SELECT * FROM authorized.cancel_order(
                 p_order_id := %s, 
@@ -66,12 +66,14 @@ class AuthorizedService:
         query = """
             SELECT * FROM authorized.make_order(
                 p_order_class := %s, 
+                p_amount := %s,
                 p_payment_method := %s, 
                 p_addresses := %s::public.address[]
             )
         """
         params = [
             data.order_class,
+            data.amount,
             data.payment_method,
             [
                 (

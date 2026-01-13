@@ -10,6 +10,7 @@ class CancelOrderSchema(BaseModel):
 
 class MakeOrderSchema(BaseModel):
     order_class: CarClasses = Field(...)
+    amount: int = Field(...)
     payment_method: PaymentMethods = Field(...)
     addresses: list[Address] = Field(...)
 
